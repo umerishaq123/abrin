@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:abrin_app_new/Bussinesses/AddNewBusiness/LoactionPikerscreen.dart';
 import 'package:abrin_app_new/RetriveToken.dart';
+import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
 import 'package:abrin_app_new/componets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -144,7 +145,7 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
       return;
     }
 
-    final token = await getToken();
+    final token = await SessionHandlingViewModel().getToken();
     if (token == null || token.isEmpty) {
       setState(() {
         _isLoading = false;

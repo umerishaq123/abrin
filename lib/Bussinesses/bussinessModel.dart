@@ -10,6 +10,10 @@ class Business {
   final String description;
   final int id;
   final String profilePicture;
+  final String phone;
+    final String? email;
+    final String website;
+    final String socialMedia;
 
   Business(
       {required this.name,
@@ -21,7 +25,12 @@ class Business {
       required this.isApproved,
       required this.isVerified,
       required this.profilePicture,
-      required this.id});
+      required this.id,
+      required this.email,
+      required this.phone,
+      required this.socialMedia,
+      required this.website
+      });
 
   factory Business.fromJson(Map<String, dynamic> json) {
     return Business(
@@ -35,8 +44,37 @@ class Business {
       isApproved: json['isApproved'] ?? false,
       isVerified: json['isVerified'] ?? false,
       description: json['description'] ?? 'No description',
+      phone: json["phone"]??"",
+        // email: emailValues.map[json["email"]],
+        email: json["email"]??'',
+        website: json["website"]??"",
+        socialMedia: json["socialMedia"]??'',
     );
   }
 
   Object? toJson() {}
 }
+
+// enum Email {
+//     ABC_GMAIL_COM,
+//     UPDATEDBUSINESS_EXAMPLE_COM,
+//     VXVXVD
+// }
+
+// final emailValues = EnumValues({
+//     "abc@gmail.com": Email.ABC_GMAIL_COM,
+//     "updatedbusiness@example.com": Email.UPDATEDBUSINESS_EXAMPLE_COM,
+//     "vxvxvd": Email.VXVXVD
+// });
+
+// class EnumValues<T> {
+//     Map<String, T> map;
+//     late Map<T, String> reverseMap;
+
+//     EnumValues(this.map);
+
+//     Map<T, String> get reverse {
+//             reverseMap = map.map((k, v) => MapEntry(v, k));
+//             return reverseMap;
+//     }
+// }

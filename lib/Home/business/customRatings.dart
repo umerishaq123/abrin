@@ -1,3 +1,4 @@
+import 'package:abrin_app_new/Bussinesses/bussinessModel.dart';
 import 'package:custom_rating_bar/custom_rating_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,14 @@ class CustomRating extends StatelessWidget {
   final double rating;
   final bool isVerified;
   final String profilePicture;
-  final List<String>? galleryImages; // Optional list of gallery images
+  final List<String>? galleryImages; 
+  final String phone;
+   final String? email;
+    
+   final String website;
+  final  String socialMedia;
+   final int id;
+  // Optional list of gallery images
 
   const CustomRating({
     Key? key,
@@ -22,10 +30,14 @@ class CustomRating extends StatelessWidget {
     required this.description,
     required this.profilePicture,
     required this.isVerified,
-     this.galleryImages, // Optional parameter
+     this.galleryImages, 
+     required this.phone,
+     required this.website,
+     required this.socialMedia,
+     required this.email, required this.id// Optional parameter
   }) : super(key: key);
 
-  get email => null;
+  // get email => null;
 
   @override
   Widget build(BuildContext context) {

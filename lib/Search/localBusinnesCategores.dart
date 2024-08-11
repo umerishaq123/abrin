@@ -1,4 +1,5 @@
 
+import 'package:abrin_app_new/Search/business_detail.dart';
 import 'package:abrin_app_new/Search/localBusinesscategory.dart';
 import 'package:custom_rating_bar/custom_rating_bar.dart';
 import 'package:flutter/material.dart';
@@ -35,22 +36,32 @@ class Localbusinnescategores extends StatelessWidget {
           SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Text(businescategory.location)),
-          Row(
-            children: [
-              RatingBar(
-                size: 16,
-                filledIcon: Icons.star,
-                filledColor: Color.fromARGB(255, 243, 180, 33),
-                emptyColor: const Color.fromARGB(255, 222, 219, 219),
-                emptyIcon: Icons.star,
-                onRatingChanged: (value) => debugPrint('$value'),
-                initialRating: businescategory.rating,
-                maxRating: 5,
-              ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     RatingBar(
+          //       size: 16,
+          //       filledIcon: Icons.star,
+          //       filledColor: Color.fromARGB(255, 243, 180, 33),
+          //       emptyColor: const Color.fromARGB(255, 222, 219, 219),
+          //       emptyIcon: Icons.star,
+          //       onRatingChanged: (value) => debugPrint('$value'),
+          //       initialRating: businescategory.rating,
+          //       maxRating: 5,
+          //     ),
+          //   ],
+          // ),
         ],
       ),
+   
+   onTap: (){
+     Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BusinessDetail(business: businescategory),
+          ),
+        );
+   },
     );
+ 
   }
 }

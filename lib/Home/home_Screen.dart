@@ -1,4 +1,3 @@
-
 import 'package:abrin_app_new/BookMark/bookMarkScreen.dart';
 import 'package:abrin_app_new/Bottom%20bar/curvedBottomvar.dart';
 import 'package:abrin_app_new/Bussinesses/AddNewBusiness/AddNewBussiness.dart';
@@ -27,7 +26,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height=MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: BottomNavBar(
         initialPage: 0, // Home page index
@@ -67,24 +66,24 @@ class HomeScreen extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: Colors.white),
                         ),
-                      //   GestureDetector(
-                      //     onTap: () {
-                      //       Navigator.push(
-                      //         context,
-                      //         MaterialPageRoute(
-                      //             builder: (context) => NotificationScreen()),
-                      //       );
-                      //     },
-                      //     child: const Icon(
-                      //       Icons.notification_add_rounded,
-                      //       color: Colors.white,
-                      //       size: 32,
-                      //     ),
-                      //   )
+                        //   GestureDetector(
+                        //     onTap: () {
+                        //       Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //             builder: (context) => NotificationScreen()),
+                        //       );
+                        //     },
+                        //     child: const Icon(
+                        //       Icons.notification_add_rounded,
+                        //       color: Colors.white,
+                        //       size: 32,
+                        //     ),
+                        //   )
                       ],
                     ),
                   ),
-                   Positioned(
+                  Positioned(
                     top: 62,
                     left: 28,
                     right: 8,
@@ -108,18 +107,18 @@ class HomeScreen extends StatelessWidget {
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(35),
-                                borderSide: const BorderSide(
-                                    color: Colors.transparent),
+                                borderSide:
+                                    const BorderSide(color: Colors.transparent),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(35),
-                                borderSide: const BorderSide(
-                                    color: Colors.transparent),
+                                borderSide:
+                                    const BorderSide(color: Colors.transparent),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(35),
-                                borderSide: const BorderSide(
-                                    color: Colors.transparent),
+                                borderSide:
+                                    const BorderSide(color: Colors.transparent),
                               ),
                               prefixIcon: const Padding(
                                 padding: EdgeInsets.only(
@@ -351,6 +350,9 @@ class HomeScreen extends StatelessWidget {
                             description: business.description,
                             isVerified: business.isVerified,
                             profilePicture: business.profilePicture,
+                            phone: business.phone,
+                            website: business.website,
+                            socialMedia: business.socialMedia, email:business.email, id: business.id,
                           ),
                           bottomModel: BottomModel(
                             title: business.name,
@@ -372,6 +374,10 @@ class HomeScreen extends StatelessWidget {
                     description: business.description,
                     isVerified: business.isVerified,
                     profilePicture: business.profilePicture,
+                    phone: business.phone,
+                    website: business.website,
+                    socialMedia: business.socialMedia,
+                    email: business.email, id: business.id,
                   ),
                 );
               },
@@ -382,6 +388,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
-
-

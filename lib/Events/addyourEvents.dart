@@ -5,6 +5,7 @@ import 'package:abrin_app_new/Bussinesses/AddNewBusiness/LoactionPikerscreen.dar
 import 'package:abrin_app_new/Events/ApiHandlerForEvents.dart';
 import 'package:abrin_app_new/Events/addeventsmodel.dart';
 import 'package:abrin_app_new/RetriveToken.dart';
+import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
 import 'package:abrin_app_new/componets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -123,7 +124,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         _isLoading = true; // Start loading
       });
 
-      final token = await getToken();
+      final token = await SessionHandlingViewModel().getToken();
       if (token == null || token.isEmpty) {
         setState(() {
           _isLoading = false; // Stop loading if token is invalid

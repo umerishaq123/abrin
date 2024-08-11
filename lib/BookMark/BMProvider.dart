@@ -12,6 +12,7 @@ class BookmarkProvider with ChangeNotifier {
     final url = Uri.parse('https://srv562456.hstgr.cloud/api/business/${business.id}/favorite');
     try {
       final response = await http.post(url);
+      print("the fav items are hare:${response.body}");
       if (response.statusCode == 200) {
         if (!_bookmarkedBusinesses.any((b) => b.id == business.id)) {
           _bookmarkedBusinesses.add(business);

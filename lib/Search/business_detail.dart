@@ -1,18 +1,23 @@
 import 'package:abrin_app_new/Events/addeventsmodel.dart';
 import 'package:abrin_app_new/Home/ReviewBusiness/images_viewer_screen.dart';
+import 'package:abrin_app_new/Search/localBusinesscategory.dart';
+import 'package:custom_rating_bar/custom_rating_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class Eventdetail extends StatefulWidget {
-  final Event event;
-  Eventdetail({super.key, required this.event});
+class BusinessDetail extends StatefulWidget {
+  final LocalBusinessCategory business;
+  BusinessDetail({
+    super.key,
+    required this.business,
+  });
 
   @override
-  State<Eventdetail> createState() => _EventdetailState();
+  State<BusinessDetail> createState() => _BusinessDetailState();
 }
 
-class _EventdetailState extends State<Eventdetail> {
+class _BusinessDetailState extends State<BusinessDetail> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -25,7 +30,10 @@ class _EventdetailState extends State<Eventdetail> {
                 Navigator.pop(context);
               },
               icon: Icon(Icons.arrow_back)),
-          title: Text(widget.event.name,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+          title: Text(
+            widget.business.businessName,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
           centerTitle: true,
         ),
         body: Column(
@@ -54,20 +62,20 @@ class _EventdetailState extends State<Eventdetail> {
                       radius: 50,
                       backgroundColor: Colors.white,
                       child: GestureDetector(
-                        onTap: (){
-                           Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ImageScreen(
-                                          imagePath: widget
-                                              .event.image,
-                                        ),
-                                      ),
-                                    );
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ImageScreen(
+                                imagePath: widget.business.imagePath,
+                              ),
+                            ),
+                          );
                         },
                         child: CircleAvatar(
                           radius: 40,
-                          backgroundImage: NetworkImage(widget.event.image),
+                          backgroundImage:
+                              NetworkImage(widget.business.imagePath),
                         ),
                       )),
                 )
@@ -79,7 +87,7 @@ class _EventdetailState extends State<Eventdetail> {
             Container(
               margin: EdgeInsets.all(15),
               padding: EdgeInsets.all(10),
-              height: height * 0.33,
+              height: height * 0.35,
               width: width * 0.99,
               decoration: BoxDecoration(
                 boxShadow: const [
@@ -98,11 +106,11 @@ class _EventdetailState extends State<Eventdetail> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Description',
+                    'Category',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   Container(
-                    height: height * 0.1,
+                    height: height * 0.07,
                     width: width * 0.9,
                     decoration: BoxDecoration(
                       boxShadow: const [
@@ -119,7 +127,7 @@ class _EventdetailState extends State<Eventdetail> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(widget.event.description ?? ''),
+                      child: Text(widget.business.category),
                     ),
                   ),
                   SizedBox(
@@ -131,7 +139,7 @@ class _EventdetailState extends State<Eventdetail> {
                   ),
                   Container(
                     padding: EdgeInsets.all(10),
-                    height: height * 0.13,
+                    height: height * 0.18,
                     width: width * 0.9,
                     decoration: BoxDecoration(
                       boxShadow: const [
@@ -147,76 +155,78 @@ class _EventdetailState extends State<Eventdetail> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
                               child: Text.rich(TextSpan(children: [
-                                                              TextSpan(
-                                                                text: 'Emplacement: ',
-                                                                style: TextStyle(
-                                                                  fontWeight: FontWeight.bold,
-                                                                  color: Colors.black,
-                                                                ),
-                                                              ),
-                                                              TextSpan(
-                                                                text: widget.event.location ?? '',
-                                                                style: TextStyle(
-                                                                  color: Colors.grey,
-                                                                ),
-                                                              ),
-                                                            ])),
+                                const TextSpan(
+                                  text: 'Emplacement: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: widget.business.location,
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ])),
                             )
                           ],
                         ),
-                        SizedBox(height: height * 0.01),
                         Divider(),
+                        SizedBox(height: height*0.01,),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text.rich(TextSpan(children: [
-                                  TextSpan(
-                                    text: 'Date: ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
+                          const Text('Rating:   ',   style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
-                                  TextSpan(
-                                    text: widget.event.date,
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ]))
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text.rich(TextSpan(children: [
-                                  TextSpan(
-                                    text: 'Heure: ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: widget.event.time,
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ]))
-                              ],
-                            ),
+                          ),
+                          
                           ],
-                        )
+                        ),
+                        SizedBox(height: height*0.01,),
+                          Container(
+                             height: height * 0.04,
+                    width: width * 0.9,
+                    decoration: BoxDecoration(
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.white,
+                          blurRadius: 10,
+                        ),
+                      ],
+                      border: Border.all(
+                        color: Color.fromARGB(255, 204, 204, 204),
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                RatingBar(
+                                    size: 16,
+                                    filledIcon: Icons.star,
+                                    filledColor: Color.fromARGB(255, 243, 180, 33),
+                                    emptyColor:
+                                        const Color.fromARGB(255, 222, 219, 219),
+                                    emptyIcon: Icons.star,
+                                    onRatingChanged: (value) => debugPrint('$value'),
+                                    initialRating: widget.business.rating,
+                                    maxRating: 5,
+                                  ),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                   )

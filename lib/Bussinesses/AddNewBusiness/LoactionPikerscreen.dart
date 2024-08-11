@@ -69,6 +69,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       setState(() {
         selectedAddress =
             "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
+            print("::: the selected location is :$selectedAddress");
       });
     }
   }

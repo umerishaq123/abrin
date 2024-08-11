@@ -5,6 +5,7 @@
 import 'package:abrin_app_new/Search/Service.dart';
 import 'package:abrin_app_new/Search/localBusinesscategory.dart';
 import 'package:abrin_app_new/Search/localBusinnesCategores.dart';
+import 'package:abrin_app_new/Search/map_screen.dart';
 import 'package:abrin_app_new/Search/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -131,6 +132,41 @@ class _SearchbusinessState extends State<Searchbusiness> {
     _performLocationSearch(position.latitude, position.longitude);
   }
 
+
+ 
+  void _navigateToMapScreen() async {
+    List<Business>? selectedEvents = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MapScreen(
+          onEventsFound: (events) {
+            // Handle the events found in the map screen
+            setState(() {
+              _locationResults = events.map((event) => LocalBusinessCategory(
+                businessName: event.name,
+                imagePath: event.coverPicture ?? 'assets/images/default.png',
+                category: event.category,
+                location: event.location,
+                rating: event.rating,
+              )).toList();
+            });
+          },
+        ),
+      ),
+    );
+ // Optionally, handle the selected events if needed
+    if (selectedEvents != null && selectedEvents.isNotEmpty) {
+      setState(() {
+        _locationResults = selectedEvents.map((event) => LocalBusinessCategory(
+          businessName: event.name,
+          imagePath: event.coverPicture ?? 'assets/images/default.png',
+          category: event.category,
+          location: event.location,
+          rating: event.rating,
+        )).toList();
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final locationProvider = Provider.of<LocationProvider>(context);
@@ -213,6 +249,7 @@ class _SearchbusinessState extends State<Searchbusiness> {
                           locationProvider.enableLocationBasedSearch();
                           _fetchCurrentLocation();
                         }
+                      _navigateToMapScreen();
                       },
                       color: Colors.blue,
                       icon: Icon(
@@ -227,31 +264,31 @@ class _SearchbusinessState extends State<Searchbusiness> {
               ),
               _isLoading
                   ? Center(child: CircularProgressIndicator())
-                  : Flexible(
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        child: ListView.builder(
-                          reverse: true,
-                          shrinkWrap: true,
-                          itemCount: _controller.text.isEmpty
+                  : Expanded(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      child: ListView.builder(
+                        reverse: false,
+                        shrinkWrap: true,
+                        itemCount: _controller.text.isEmpty
+                            ? (locationProvider.isLocationBasedSearch
+                                ? _locationResults.length
+                                : _allitems.length)
+                            : _searchResults.length,
+                        itemBuilder: (context, index) {
+                          var item = _controller.text.isEmpty
                               ? (locationProvider.isLocationBasedSearch
-                                  ? _locationResults.length
-                                  : _allitems.length)
-                              : _searchResults.length,
-                          itemBuilder: (context, index) {
-                            var item = _controller.text.isEmpty
-                                ? (locationProvider.isLocationBasedSearch
-                                    ? _locationResults[index]
-                                    : _allitems[index])
-                                : _searchResults[index];
-                            return Localbusinnescategores(
-                              businescategory: item,
-                              latLng: LatLng(28.3901, 70.3300),
-                            );
-                          },
-                        ),
+                                  ? _locationResults[index]
+                                  : _allitems[index])
+                              : _searchResults[index];
+                          return Localbusinnescategores(
+                            businescategory: item,
+                            latLng: LatLng(28.3901, 70.3300),
+                          );
+                        },
                       ),
                     ),
+                  ),
             ],
           ),
         ),
@@ -264,6 +301,7 @@ class _SearchbusinessState extends State<Searchbusiness> {
               onPressed: () {
                 locationProvider.enableLocationBasedSearch();
                 _fetchCurrentLocation();
+                _navigateToMapScreen();
               },
               backgroundColor: Colors.blue,
               shape: RoundedRectangleBorder(
@@ -285,3 +323,5 @@ class _SearchbusinessState extends State<Searchbusiness> {
     );
   }
 }
+
+

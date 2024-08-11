@@ -3,7 +3,12 @@ import 'package:abrin_app_new/BookMark/BMProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BookmarkedScreen extends StatelessWidget {
+class BookmarkedScreen extends StatefulWidget {
+  @override
+  State<BookmarkedScreen> createState() => _BookmarkedScreenState();
+}
+
+class _BookmarkedScreenState extends State<BookmarkedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

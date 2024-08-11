@@ -4,6 +4,7 @@ import 'package:abrin_app_new/RetriveToken.dart';
 import 'package:abrin_app_new/Search/provider.dart';
 import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
 import 'package:abrin_app_new/aouth/login.dart';
+import 'package:abrin_app_new/aouth/splash_screen.dart';
 import 'package:abrin_app_new/componets/modelCategories.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,25 +35,26 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: FutureBuilder<String?>(
+        home:SplasScreen(),
+        //  FutureBuilder<String?>(
           
-          future: SessionHandlingViewModel().getToken(),
-          builder: (context, snapshot) {
-            print("::: the token fromm session:${SessionHandlingViewModel().getToken()}");
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            } else if (snapshot.hasData && snapshot.data != null) {
-              return HomeScreen(
-                  categories: categories); // Navigate to home if token exists
-            } else {
-              return LoginPage(); // Navigate to login if no token found
-            }
-          },
-        ),
+        //   future: SessionHandlingViewModel().getToken(),
+        //   builder: (context, snapshot) {
+        //     print("::: the token fromm session:${SessionHandlingViewModel().getToken()}");
+        //     if (snapshot.connectionState == ConnectionState.waiting) {
+        //       return Scaffold(
+        //         body: Center(
+        //           child: CircularProgressIndicator(),
+        //         ),
+        //       );
+        //     } else if (snapshot.hasData && snapshot.data != null) {
+        //       return HomeScreen(
+        //           categories: categories); // Navigate to home if token exists
+        //     } else {
+        //       return LoginPage(); // Navigate to login if no token found
+        //     }
+        //   },
+        // ),
       ),
     );
   }

@@ -173,6 +173,10 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
       isApproved: widget.business['isApproved'],
       isVerified: true,
       profilePicture: '',
+      email: widget.business['email'],
+      phone: widget.business['phone'],
+      socialMedia: widget.business['socialMedia'],
+      website: widget.business['website'],
     );
 
     try {
