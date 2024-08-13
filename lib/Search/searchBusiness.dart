@@ -37,6 +37,7 @@ class _SearchbusinessState extends State<Searchbusiness> {
     });
     try {
       final businesses = await BusinessServicesearch().fetchBusinesses();
+      if (!mounted) return; 
       setState(() {
         _allitems = businesses
             .map((business) => LocalBusinessCategory(
@@ -51,7 +52,8 @@ class _SearchbusinessState extends State<Searchbusiness> {
       });
     } catch (e) {
       print('Error fetching businesses: $e');
-    } finally {
+    } 
+    finally {
       setState(() {
         _isLoading = false;
       });
@@ -84,6 +86,7 @@ class _SearchbusinessState extends State<Searchbusiness> {
     try {
       final businesses =
           await BusinessServicesearch().searchBusinesses(lat: lat, lng: lng);
+          if (!mounted) return; 
       setState(() {
         _locationResults = businesses
             .map((business) => LocalBusinessCategory(
@@ -140,6 +143,7 @@ class _SearchbusinessState extends State<Searchbusiness> {
       MaterialPageRoute(
         builder: (context) => MapScreen(
           onEventsFound: (events) {
+            if (!mounted) return; 
             // Handle the events found in the map screen
             setState(() {
               _locationResults = events.map((event) => LocalBusinessCategory(
@@ -156,6 +160,7 @@ class _SearchbusinessState extends State<Searchbusiness> {
     );
  // Optionally, handle the selected events if needed
     if (selectedEvents != null && selectedEvents.isNotEmpty) {
+      if (!mounted) return; 
       setState(() {
         _locationResults = selectedEvents.map((event) => LocalBusinessCategory(
           businessName: event.name,

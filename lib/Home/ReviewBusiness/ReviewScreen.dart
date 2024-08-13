@@ -1,13 +1,14 @@
+import 'package:abrin_app_new/BookMark/BMProvider.dart';
 import 'package:abrin_app_new/Home/ReviewBusiness/BottomSheet.dart';
 import 'package:abrin_app_new/Home/ReviewBusiness/HASFR.dart';
 import 'package:abrin_app_new/Home/ReviewBusiness/images_viewer_screen.dart';
 import 'package:abrin_app_new/Home/business/customRatings.dart';
 import 'package:custom_rating_bar/custom_rating_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 import 'package:permission_handler/permission_handler.dart';
-
 
 class Category {
   final IconData icon;
@@ -39,7 +40,7 @@ class ReviewsScreen extends StatefulWidget {
     super.key,
     required this.customRating,
     required this.bottomModel,
-    required int businessId,
+    required String businessId,
   });
 
   @override
@@ -68,8 +69,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     ),
   ];
 
-  
-
   final List<Category1> categories1 = [
     Category1(
       icon: Icons.shopping_bag,
@@ -91,8 +90,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   int _hospitalityRating = 0;
   int _pricingRating = 0;
   bool _isFavorite = false;
- 
-   @override
+
+  @override
   void initState() {
     super.initState();
     _checkPermissions();
@@ -108,17 +107,17 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Category> categories = [
-    Category(
-      icon: Icons.directions,
-      label: 'Direction',
-      onTap: () {
-        launcher.launchUrl(
-          Uri.parse('https://www.google.com/'),
-          mode: launcher.LaunchMode.externalApplication,
-        );
-      },
-    ),
-  Category(
+      Category(
+        icon: Icons.directions,
+        label: 'Direction',
+        onTap: () {
+          launcher.launchUrl(
+            Uri.parse('https://www.google.com/'),
+            mode: launcher.LaunchMode.externalApplication,
+          );
+        },
+      ),
+      Category(
         icon: Icons.call,
         label: 'Call Now',
         onTap: () async {
@@ -152,72 +151,78 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           }
         },
       ),
-   Category(
-  icon: Icons.screen_share_outlined,
-  label: 'Website',
-  onTap: () {
-    final websiteUrl = widget.customRating.website;
-    if (websiteUrl != null && websiteUrl.isNotEmpty) {
-      // Ensure the URL starts with 'http://' or 'https://'
-      final formattedUrl = websiteUrl.startsWith('http://') || websiteUrl.startsWith('https://')
-          ? websiteUrl
-          : 'https://$websiteUrl';
-
-      final uri = Uri.parse(formattedUrl);
-      launcher.launchUrl(
-        uri,
-        mode: launcher.LaunchMode.externalApplication,
-      ).catchError((e) {
-        // Handle the error if the URL cannot be launched
-        print('Could not launch URL: $e');
-      });
-    } else {
-      print('Website URL is not provided or invalid.');
-    }
-  },
-)
-,
-  Category(
-  icon: Icons.email,
-  label: 'Email',
-  onTap: () {
-    final email = widget.customRating.email;
-    if (email != null && email.isNotEmpty) {
-      final emailUri = Uri(
-        scheme: 'mailto',
-        path: email,
-      );
-
-      launcher.launchUrl(
-        emailUri,
-        mode: launcher.LaunchMode.externalApplication,
-      ).catchError((e) {
-        // Handle the error if the email client cannot be launched
-        print('Could not launch email client: $e');
-      });
-    } else {
-      print('Email address is not provided or invalid.');
-    }
-  },
-)
-,
-    Category(
-      icon: Icons.bookmark,
-      label: "Faviors",
-      onTap: () {
-        //bookmarkBusiness();
-      },
-    ),
-    Category(icon: Icons.share, label: "Partager", 
+      Category(
+        icon: Icons.screen_share_outlined,
+        label: 'Website',
         onTap: () {
-        // Generate the shareable URL. Replace with your actual URL structure.
-        final String businessProfileUrl = 'https://yourapp.com/business/${widget.customRating.id}';
-        print(":::the url of biisnus is :${businessProfileUrl}");
-        Share.share('Check out this business profile: $businessProfileUrl');
-      }
-    ),
-    Category(icon: Icons.star_border, label: "Note", onTap: () {}),
-  ];
+          final websiteUrl = widget.customRating.website;
+          if (websiteUrl != null && websiteUrl.isNotEmpty) {
+            // Ensure the URL starts with 'http://' or 'https://'
+            final formattedUrl = websiteUrl.startsWith('http://') ||
+                    websiteUrl.startsWith('https://')
+                ? websiteUrl
+                : 'https://$websiteUrl';
+
+            final uri = Uri.parse(formattedUrl);
+            launcher
+                .launchUrl(
+              uri,
+              mode: launcher.LaunchMode.externalApplication,
+            )
+                .catchError((e) {
+              // Handle the error if the URL cannot be launched
+              print('Could not launch URL: $e');
+            });
+          } else {
+            print('Website URL is not provided or invalid.');
+          }
+        },
+      ),
+      Category(
+        icon: Icons.email,
+        label: 'Email',
+        onTap: () {
+          final email = widget.customRating.email;
+          print("::: the email launcher is :$email");
+          if (email != null && email.isNotEmpty) {
+            final emailUri = Uri(
+              scheme: 'mailto',
+              path: email,
+            );
+
+            launcher
+                .launchUrl(
+              emailUri,
+              mode: launcher.LaunchMode.externalApplication,
+            )
+                .catchError((e) {
+              // Handle the error if the email client cannot be launched
+              print('Could not launch email client: $e');
+            });
+          } else {
+            print('Email address is not provided or invalid.');
+          }
+        },
+      ),
+      Category(
+        icon: Icons.bookmark,
+        label: "Faviors",
+        onTap: () {
+          //bookmarkBusiness();
+        },
+      ),
+      Category(
+          icon: Icons.share,
+          label: "Partager",
+          onTap: () {
+            // Generate the shareable URL. Replace with your actual URL structure.
+            final String businessProfileUrl =
+                'https://yourapp.com/business/${widget.customRating.id}';
+            print(":::the url of biisnus is :${businessProfileUrl}");
+            Share.share('Check out this business profile: $businessProfileUrl');
+          }),
+      Category(icon: Icons.star_border, label: "Note", onTap: () {}),
+    ];
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -256,16 +261,15 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   bottom: -50,
                   left: MediaQuery.of(context).size.width / 2 - 50,
                   child: GestureDetector(
-                    onTap: (){
-                       Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ImageScreen(
-                                          imagePath: widget
-                                              .customRating.profilePicture,
-                                        ),
-                                      ),
-                                    );
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ImageScreen(
+                            imagePath: widget.customRating.profilePicture,
+                          ),
+                        ),
+                      );
                     },
                     child: CircleAvatar(
                       radius: 50,
@@ -329,140 +333,134 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             ),
 
             Container(
-              height: 56,
-              width: MediaQuery.of(context).size.width * 0.9,
-              decoration: BoxDecoration(
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.white,
-                    blurRadius: 10,
-                  ),
-                ],
-                border: Border.all(
-                  color: Color.fromARGB(255, 204, 204, 204),
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child:
-                  ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        return
-                  Padding(
-                padding: const EdgeInsets.only(right: 10, left: 10),
-                child: GestureDetector(
-                  onTap: categories[index].onTap,
-                  child: Center(
-                    child: Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          // InkWell(
-                          //   onTap: (){
-                          //       final String businessLink = 'https://example.com'; // Replace with your business link
-
-                          //     Share.share(businessLink);
-                          //   },
-                          //   child: Container(
-                          //     height: 40,
-                          //     width: 100,
-                          //     decoration: BoxDecoration(
-                          //       borderRadius: BorderRadius.circular(5),
-                          //       border: Border.all(color: Colors.black),
-                          //       color: selectedIndex == index
-                          //           ? Colors.blue
-                          //           : Colors.white,
-                          //     ),
-                          //     child: Row(
-                          //       children: [
-                          //         Icon(
-                          //           Icons.share,
-                          //           size: 20,
-                          //           color: Colors.blue,
-                          //         ),
-                          //         const SizedBox(
-                          //           width: 5,
-                          //         ),
-                          //         Text(
-                          //           'Partager',
-                          //           style: const TextStyle(
-                          //             color: Colors.grey,
-                          //             fontSize: 14,
-                          //           ),
-                          //         )
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
-                          // // Container(
-                          //       height: 40,
-                          //       width: 140,
-                          //       decoration: BoxDecoration(
-                          //         borderRadius: BorderRadius.circular(5),
-                          //         border: Border.all(color: Colors.black),
-                          //       ),
-                          //       child: const Row(
-                          //         children: [
-                          //           Icon(
-                          //             Icons.facebook,
-                          //             size: 26,
-                          //             color: Colors.blue,
-                          //           ),
-                          //           SizedBox(
-                          //             width: 5,
-                          //           ),
-                          //           Text(
-                          //             'Social Account',
-                          //             style: TextStyle(
-                          //                 color: Colors.grey, fontSize: 14),
-                          //           ),
-                          //         ],
-                          //       ),
-                          //     ),
-                
-                            Container(
-                              height: 40,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(color: Colors.black),
-                                color: selectedIndex == index
-                                    ? Colors.blue
-                                    : Colors.white,
-                              ),
-                              child: Center(
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      categories[index].icon,
-                                      size: 20,
-                                      color: Colors.blue,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      categories[index].label,
-                                      style: const TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
+                height: 56,
+                width: MediaQuery.of(context).size.width * 0.9,
+                decoration: BoxDecoration(
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.white,
+                      blurRadius: 10,
                     ),
+                  ],
+                  border: Border.all(
+                    color: Color.fromARGB(255, 204, 204, 204),
+                    width: 1,
                   ),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              );
-              }
-              )
-            ),
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 10, left: 10),
+                        child: GestureDetector(
+                          onTap: categories[index].onTap,
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                // InkWell(
+                                //   onTap: (){
+                                //       final String businessLink = 'https://example.com'; // Replace with your business link
+
+                                //     Share.share(businessLink);
+                                //   },
+                                //   child: Container(
+                                //     height: 40,
+                                //     width: 100,
+                                //     decoration: BoxDecoration(
+                                //       borderRadius: BorderRadius.circular(5),
+                                //       border: Border.all(color: Colors.black),
+                                //       color: selectedIndex == index
+                                //           ? Colors.blue
+                                //           : Colors.white,
+                                //     ),
+                                //     child: Row(
+                                //       children: [
+                                //         Icon(
+                                //           Icons.share,
+                                //           size: 20,
+                                //           color: Colors.blue,
+                                //         ),
+                                //         const SizedBox(
+                                //           width: 5,
+                                //         ),
+                                //         Text(
+                                //           'Partager',
+                                //           style: const TextStyle(
+                                //             color: Colors.grey,
+                                //             fontSize: 14,
+                                //           ),
+                                //         )
+                                //       ],
+                                //     ),
+                                //   ),
+                                // ),
+                                // // Container(
+                                //       height: 40,
+                                //       width: 140,
+                                //       decoration: BoxDecoration(
+                                //         borderRadius: BorderRadius.circular(5),
+                                //         border: Border.all(color: Colors.black),
+                                //       ),
+                                //       child: const Row(
+                                //         children: [
+                                //           Icon(
+                                //             Icons.facebook,
+                                //             size: 26,
+                                //             color: Colors.blue,
+                                //           ),
+                                //           SizedBox(
+                                //             width: 5,
+                                //           ),
+                                //           Text(
+                                //             'Social Account',
+                                //             style: TextStyle(
+                                //                 color: Colors.grey, fontSize: 14),
+                                //           ),
+                                //         ],
+                                //       ),
+                                //     ),
+
+                                Container(
+                                  height: 40,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(color: Colors.black),
+                                    color: selectedIndex == index
+                                        ? Colors.blue
+                                        : Colors.white,
+                                  ),
+                                  child: Center(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          categories[index].icon,
+                                          size: 20,
+                                          color: Colors.blue,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          categories[index].label,
+                                          style: const TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    })),
             const SizedBox(
               height: 12,
             ),
@@ -521,8 +519,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                           GestureDetector(
                             onTap: () {},
                             child: Container(
-                              child: 
-                              Container(
+                              child: Container(
                                 height: 40,
                                 width: 140,
                                 decoration: BoxDecoration(
@@ -760,7 +757,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => ImageScreen(
-                                          
                                           imagePath:
                                               widget.customRating.coverPicture,
                                         ),
@@ -882,15 +878,17 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                 ]),
                       ],
                     ),
-                    Positioned(
-                      right: 8,
-                      child: Text(
-                        '${widget.customRating.address}',
-                        style: TextStyle(
-                          color: Colors.grey,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${widget.customRating.address}',
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
                         ),
-                      ),
-                    ),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -1055,6 +1053,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                       children: [
                         IconButton(
                             onPressed: () {
+                               print(":: button preesed");
+                              Provider.of<BookmarkProvider>(context,
+                                      listen: false)
+                                  .addtoFav(businessId: widget.customRating.id.toString());
                               setState(() {
                                 _isFavorite = !_isFavorite;
                               });
@@ -1066,7 +1068,9 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                               color: _isFavorite ? Colors.red : null,
                             )),
                         IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                             
+                            },
                             icon: Icon(Icons.messenger_outline_outlined)),
                       ],
                     )

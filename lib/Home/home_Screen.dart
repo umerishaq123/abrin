@@ -16,9 +16,46 @@ import 'package:abrin_app_new/componets/modelCategories.dart';
 import 'package:abrin_app_new/listOfselectedCategories.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final List<Categorys> categories;
   const HomeScreen({required this.categories, super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+   String searchQuery = '';
+  List<Business> allBusinesses = [];
+  List<Business> filteredBusinesses = [];
+   @override
+  void initState() {
+    super.initState();
+    _fetchBusinesses();
+  }
+
+  Future<void> _fetchBusinesses() async {
+    try {
+      final businesses = await BusinessService().fetchBusinesses();
+      setState(() {
+        allBusinesses = businesses;
+        filteredBusinesses = businesses;
+      });
+    } catch (e) {
+      print('Error fetching businesses: $e');
+    }
+  }
+
+  void _updateSearchQuery(String query) {
+    setState(() {
+      searchQuery = query;
+      filteredBusinesses = allBusinesses
+          .where((business) =>
+              business.name.toLowerCase().contains(query.toLowerCase()) ||
+              business.category.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
 
   bool isLoggedIn() {
     return true;
@@ -42,6 +79,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildHomeContent(BuildContext context) {
+    
     return SingleChildScrollView(
       child: SafeArea(
         child: Column(
@@ -104,6 +142,7 @@ class HomeScreen extends StatelessWidget {
                           height: 45,
                           width: double.infinity,
                           child: TextFormField(
+                              onChanged: _updateSearchQuery,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(35),
@@ -178,9 +217,9 @@ class HomeScreen extends StatelessWidget {
                     child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         shrinkWrap: true,
-                        itemCount: categories.length,
+                        itemCount: widget.categories.length,
                         itemBuilder: (context, index) {
-                          final category = categories[index];
+                          final category = widget.categories[index];
                           return GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -314,58 +353,97 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  // Widget _buildBusinessList(BuildContext context) {
+  //   return FutureBuilder<List<Business>>(
+  //     future: BusinessService().fetchBusinesses(),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return Center(child: CircularProgressIndicator());
+  //       } else if (snapshot.hasError) {
+  //         return Center(child: Text('Error: ${snapshot.error}'));
+  //       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+  //         return Center(child: Text('No approved businesses found'));
+  //       } else {
+  //         final approvedBusinesses =
+  //             snapshot.data!.where((business) => business.isApproved).toList();
+  //         return SizedBox(
+  //           height: 300,
+  //           width: double.infinity,
+  //           child: ListView.builder(
+  //             itemCount: approvedBusinesses.length,
+  //             scrollDirection: Axis.horizontal,
+  //             itemBuilder: (context, index) {
+  //               final business = approvedBusinesses[index];
+  //               return GestureDetector(
+  //                 onTap: () {
+  //                   Navigator.push(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                       builder: (context) => ReviewsScreen(
+  //                         customRating: CustomRating(
+  //                           coverPicture: business.coverPicture,
+  //                           type: business.category,
+  //                           name: business.name,
+  //                           address: business.location,
+  //                           rating: business.rating,
+  //                           description: business.description,
+  //                           isVerified: business.isVerified,
+  //                           profilePicture: business.profilePicture,
+  //                           phone: business.phone,
+  //                           website: business.website,
+  //                           socialMedia: business.socialMedia, email:business.email, id: business.id,
+  //                         ),
+  //                         bottomModel: BottomModel(
+  //                           title: business.name,
+  //                           image: business.coverPicture,
+  //                           message: business.category,
+  //                           time: business.name,
+  //                         ),
+  //                         businessId: business.id,
+  //                       ),
+  //                     ),
+  //                   );
+  //                 },
+  //                 child: CustomRating(
+  //                   coverPicture: business.coverPicture,
+  //                   type: business.category,
+  //                   name: business.name,
+  //                   address: business.location,
+  //                   rating: business.rating,
+  //                   description: business.description,
+  //                   isVerified: business.isVerified,
+  //                   profilePicture: business.profilePicture,
+  //                   phone: business.phone,
+  //                   website: business.website,
+  //                   socialMedia: business.socialMedia,
+  //                   email: business.email, id: business.id,
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //         );
+  //       }
+  //     },
+  //   );
+  // }
   Widget _buildBusinessList(BuildContext context) {
-    return FutureBuilder<List<Business>>(
-      future: BusinessService().fetchBusinesses(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No approved businesses found'));
-        } else {
-          final approvedBusinesses =
-              snapshot.data!.where((business) => business.isApproved).toList();
-          return SizedBox(
-            height: 300,
-            width: double.infinity,
-            child: ListView.builder(
-              itemCount: approvedBusinesses.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final business = approvedBusinesses[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReviewsScreen(
-                          customRating: CustomRating(
-                            coverPicture: business.coverPicture,
-                            type: business.category,
-                            name: business.name,
-                            address: business.location,
-                            rating: business.rating,
-                            description: business.description,
-                            isVerified: business.isVerified,
-                            profilePicture: business.profilePicture,
-                            phone: business.phone,
-                            website: business.website,
-                            socialMedia: business.socialMedia, email:business.email, id: business.id,
-                          ),
-                          bottomModel: BottomModel(
-                            title: business.name,
-                            image: business.coverPicture,
-                            message: business.category,
-                            time: business.name,
-                          ),
-                          businessId: business.id,
-                        ),
-                      ),
-                    );
-                  },
-                  child: CustomRating(
+  return SizedBox(
+    height: 300,
+    width: double.infinity,
+    child: ListView.builder(
+      itemCount: filteredBusinesses.length,
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (context, index) {
+        print("::: the filter businuses are :${filteredBusinesses[index]}");
+        final business = filteredBusinesses[index];
+        print(":::: the businus id:${business.id}");
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReviewsScreen(
+                  customRating: CustomRating(
                     coverPicture: business.coverPicture,
                     type: business.category,
                     name: business.name,
@@ -377,14 +455,40 @@ class HomeScreen extends StatelessWidget {
                     phone: business.phone,
                     website: business.website,
                     socialMedia: business.socialMedia,
-                    email: business.email, id: business.id,
+                    email: business.email,
+                    id: business.id,
                   ),
-                );
-              },
-            ),
-          );
-        }
+                  bottomModel: BottomModel(
+                    title: business.name,
+                    image: business.coverPicture,
+                    message: business.category,
+                    time: business.name,
+                  ),
+                  businessId: business.id,
+                ),
+              ),
+            );
+          },
+          child: CustomRating(
+            coverPicture: business.coverPicture,
+            type: business.category,
+            name: business.name,
+            address: business.location,
+            rating: business.rating,
+            description: business.description,
+            isVerified: business.isVerified,
+            profilePicture: business.profilePicture,
+            phone: business.phone,
+            website: business.website,
+            socialMedia: business.socialMedia,
+            email: business.email,
+            id: business.id,
+          ),
+        );
       },
-    );
-  }
+    ),
+  );
+}
+
+
 }

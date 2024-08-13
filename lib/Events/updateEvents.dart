@@ -6,6 +6,7 @@ import 'package:abrin_app_new/Bussinesses/UpdateBusiness/apiForUpdateBusiness.da
 import 'package:abrin_app_new/Events/ApiHandlerForEvents.dart';
 import 'package:abrin_app_new/Events/addeventsmodel.dart';
 import 'package:abrin_app_new/RetriveToken.dart';
+import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
 import 'package:abrin_app_new/componets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +131,8 @@ class _EditEventScreenState extends State<EditEventScreen> {
       _isLoading = true;
     });
 
-    final token = await getToken();
+    final token = await SessionHandlingViewModel().getToken();
+    print("::: the token of updated event is :$token");
     if (token == null || token.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -143,10 +145,13 @@ class _EditEventScreenState extends State<EditEventScreen> {
       });
       return;
     }
+    print("::: the id of bissinus ids:${widget.event['_id']}");
 
     final updatedEvent = Event(
-      id: widget.event['id'] ?? '',
+      
+      id: widget.event['_id'] ?? '',
       image: _image?.path ?? widget.event['image'] ?? '',
+      
       description: _descriptionController.text,
       name: _nameController.text,
       location: _locationController.text,
@@ -154,10 +159,14 @@ class _EditEventScreenState extends State<EditEventScreen> {
       time: _timeController.text,
     );
 
-    try {
-      final response = await apiService.updateEvent(
-          widget.event['id'] ?? '', token, updatedEvent);
 
+
+
+    try {
+      print("::: the event id is :${widget.event['_id']}");
+      final response = await apiService.updateEvent(
+          widget.event['_id'] ?? '', token, updatedEvent);
+print("::: the response of update event is:${response.body}");
       if (response.statusCode == 200) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(

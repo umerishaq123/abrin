@@ -8,7 +8,7 @@ class Business {
   final bool isApproved;
   final bool isVerified;
   final String description;
-  final int id;
+  final String id;
   final String profilePicture;
   final String phone;
     final String? email;
@@ -34,7 +34,7 @@ class Business {
 
   factory Business.fromJson(Map<String, dynamic> json) {
     return Business(
-      id: json['id'] ?? 1,
+      id: json['id'] ??"",
       name: json['name'] ?? 'No Name',
       location: json['location'] ?? 'No Address',
       category: json['category'] ?? 'No Category',

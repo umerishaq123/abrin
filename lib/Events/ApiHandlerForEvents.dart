@@ -75,6 +75,9 @@ class ApiService {
 
   Future<http.Response> updateEvent(
       String eventId, String token, Event updatedEvent) async {
+        print(":: event id:$eventId");
+                print(":: event token:$token");
+
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/update/$eventId'),
@@ -84,7 +87,7 @@ class ApiService {
         },
         body: json.encode(updatedEvent.toJson()),
       );
-
+print("::: the response of update api is :${response.body}");
       if (response.statusCode != 200) {
         print(
             'Failed to update event: ${response.statusCode} - ${response.body}');

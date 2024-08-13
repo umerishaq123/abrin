@@ -17,7 +17,7 @@ class CustomRating extends StatelessWidget {
     
    final String website;
   final  String socialMedia;
-   final int id;
+   final String id;
   // Optional list of gallery images
 
   const CustomRating({
@@ -34,7 +34,8 @@ class CustomRating extends StatelessWidget {
      required this.phone,
      required this.website,
      required this.socialMedia,
-     required this.email, required this.id// Optional parameter
+     required this.email,
+      required this.id// Optional parameter
   }) : super(key: key);
 
   // get email => null;

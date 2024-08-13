@@ -1,9 +1,10 @@
 
 import 'package:abrin_app_new/BookMark/BMmodel.dart';
+import 'package:abrin_app_new/BookMark/fetchfav_bussines_model.dart';
 import 'package:flutter/material.dart';
 
 class BookmarkedBusinessCard extends StatelessWidget {
-  final BookmarkedBusiness business;
+  final FetchFavruitBussineses business;
 
   const BookmarkedBusinessCard({Key? key, required this.business})
       : super(key: key);

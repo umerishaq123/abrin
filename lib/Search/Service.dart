@@ -10,7 +10,7 @@ class BusinessServicesearch {
 
   Future<List<Business>> fetchBusinesses() async {
     final response = await http.get(Uri.parse('$baseUrl/all'));
-
+print("::: the respnse of all bussines is :${response.body}");
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       return data.map((e) => Business.fromJson(e)).toList();
@@ -23,7 +23,7 @@ class BusinessServicesearch {
       {required double lat, required double lng, int radius = 2000}) async {
     final response = await http
         .get(Uri.parse('$searchUrl?lng=$lng&lat=$lat&radius=$radius'));
-
+print("::: the respnse of all bussines is :${response.body}");
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       return data.map((e) => Business.fromJson(e)).toList();

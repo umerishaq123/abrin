@@ -64,7 +64,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _fetchBusinesses() async {
-    final token = await getToken();
+    final token = await SessionHandlingViewModel().getToken();
     if (token == null || token.isEmpty) {
       setState(() {
         _isLoading = false;
@@ -83,6 +83,7 @@ class _AccountScreenState extends State<AccountScreen> {
       Uri.parse('https://srv562456.hstgr.cloud/api/auth/my-businesses'),
       headers: {'Authorization': '$token'},
     );
+    
     if (response.statusCode == 200) {
       final List businesses = json.decode(response.body);
       setState(() {
@@ -92,15 +93,18 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _fetchEvents() async {
-    final token = await getToken();
+    final token = await SessionHandlingViewModel().getToken();
     final response = await https.get(
       Uri.parse('https://srv562456.hstgr.cloud/api/auth/my-events'),
       headers: {'Authorization': '$token'},
     );
+    print("::: the events in screen :${response.body}");
     if (response.statusCode == 200) {
       final List events = json.decode(response.body);
+      
       setState(() {
         _events = events.map((e) => e as Map<String, dynamic>).toList();
+        
       });
     }
   }
@@ -318,6 +322,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Widget _buildEventList() {
     if (_events.isEmpty) {
+      print("::: print1");
       return Center(
         child: Text("No Events yet",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
@@ -326,7 +331,9 @@ class _AccountScreenState extends State<AccountScreen> {
     return ListView.builder(
       itemCount: _events.length,
       itemBuilder: (context, index) {
+
         final event = _events[index];
+        print("::: the image path is :${event['image']}");
         return GestureDetector(
           onTap: () {
             Navigator.push(
@@ -337,17 +344,23 @@ class _AccountScreenState extends State<AccountScreen> {
             );
           },
           child: Container(
+           
             padding: EdgeInsets.all(10),
             child: Row(
               children: [
+                  
                 event['image'] != null
+               
                     ? Container(
+                      
                         height: 60,
                         width: 80,
                         decoration: BoxDecoration(
+                          
                           borderRadius: BorderRadius.circular(11),
                           image: DecorationImage(
-                            image: NetworkImage(event['image']),
+                            
+                            image:  NetworkImage(event['image']),
                             fit: BoxFit.cover,
                           ),
                         ),
