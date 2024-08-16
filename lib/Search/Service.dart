@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:abrin_app_new/Bussinesses/bussinessModel.dart';
 import 'package:http/http.dart' as http;
 
 class BusinessServicesearch {
@@ -8,12 +9,12 @@ class BusinessServicesearch {
   static const String searchUrl =
       'https://srv562456.hstgr.cloud/api/business/search';
 
-  Future<List<Business>> fetchBusinesses() async {
+  Future<List<Businessclass>> fetchBusinesses() async {
     final response = await http.get(Uri.parse('$baseUrl/all'));
 print("::: the respnse of all bussines is :${response.body}");
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
-      return data.map((e) => Business.fromJson(e)).toList();
+      return data.map((e) => Businessclass.fromJson(e)).toList();
     } else {
       throw Exception('Failed to load businesses');
     }
@@ -33,22 +34,22 @@ print("::: the respnse of all bussines is :${response.body}");
   }
 }
 
-class Business {
+class Businessclass {
   final String name;
   final String coverPicture;
   final String category;
   final String location;
   final double rating;
 
-  Business(
+  Businessclass(
       {required this.name,
       required this.coverPicture,
       required this.category,
       required this.location,
       required this.rating});
 
-  factory Business.fromJson(Map<String, dynamic> json) {
-    return Business(
+  factory Businessclass.fromJson(Map<String, dynamic> json) {
+    return Businessclass(
       name: json['name'] ?? '',
       coverPicture: json['coverPicture'],
       category: json['category'] ?? '',

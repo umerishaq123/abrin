@@ -68,6 +68,9 @@
 
 import 'package:abrin_app_new/BookMark/BMDetalScreen.dart';
 import 'package:abrin_app_new/BookMark/BMProvider.dart';
+import 'package:abrin_app_new/Home/ReviewBusiness/BottomSheet.dart';
+import 'package:abrin_app_new/Home/ReviewBusiness/ReviewScreen.dart';
+import 'package:abrin_app_new/Home/business/customRatings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -120,8 +123,26 @@ class _BookmarkedScreenState extends State<BookmarkedScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BMDC(
-                        business: business,
+                      builder: (context) => ReviewsScreen(
+                        customRating: CustomRating(
+                            coverPicture: business.coverPicture,
+                            type: business.category,
+                            name: business.name,
+                            address: business.location,
+                            description: business.description,
+                            profilePicture: business.profilePicture,
+                            isVerified: business.isVerified,
+                            phone: business.phone,
+                            website: business.website,
+                            socialMedia: business.socialMedia,
+                            email: business.email,
+                            id: business.id),
+                        bottomModel: BottomModel(
+                            title: business.name,
+                            image: business.coverPicture,
+                            message: business.category,
+                            time: business.name),
+                        businessId: business.id,
                       ), // Replace `NextPage` with your page widget
                     ),
                   );

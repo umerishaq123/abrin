@@ -5,6 +5,7 @@ import 'package:abrin_app_new/BookMark/addto_fav_model.dart';
 import 'package:abrin_app_new/BookMark/fetchfav_bussines_model.dart';
 import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class BookmarkProvider with ChangeNotifier {
@@ -45,6 +46,7 @@ Future<void> addtoFav({required String businessId}) async {
   try {
     print("::: the id is print:$businessId");
     final token = await SessionHandlingViewModel().getToken();
+    print(":::: the token of bussines is :$token");
 
     if (token == null || token.isEmpty) {
       throw Exception('Token is null or empty');
@@ -56,9 +58,10 @@ Future<void> addtoFav({required String businessId}) async {
     };
 
     var url = Uri.parse('https://srv562456.hstgr.cloud/api/business/favorite');
-    var body = json.encode({"businessId": '66b8f8b289b69bf7d9c6fda3'});
+    var body = json.encode({"businessId": '$businessId'});
 
     var response = await http.post(url, headers: headers, body: body);
+    print("::: the response of addto fav:${response.body}");
 
     print('Request URL: $url');
     print('Request Body: $body');
@@ -67,10 +70,27 @@ Future<void> addtoFav({required String businessId}) async {
     if (response.statusCode == 200) {
       String responseBody = response.body;
       final result = addtofavFromJson(responseBody);
+      final msg=result.msg;
+      Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
+      
       print('Response Message: ${result.msg}');
     } else {
       print('Request failed with status: ${response.statusCode}');
       print('Response Body: ${response.body}');
+     
+      Fluttertoast.showToast(
+        msg: 'bussinus not found',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
     }
   } catch (e) {
     print('Error: $e');

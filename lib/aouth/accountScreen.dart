@@ -2,7 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:abrin_app_new/Bussinesses/UpdateBusiness/ViewBusiness.dart';
+import 'package:abrin_app_new/Bussinesses/bussinessModel.dart';
 import 'package:abrin_app_new/Events/ViewEvents.dart';
+import 'package:abrin_app_new/Home/ReviewBusiness/BottomSheet.dart';
+import 'package:abrin_app_new/Home/ReviewBusiness/ReviewScreen.dart';
+import 'package:abrin_app_new/Home/business/customRatings.dart';
 import 'package:abrin_app_new/RetriveToken.dart';
 import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
 import 'package:abrin_app_new/aouth/login.dart';
@@ -12,6 +16,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountScreen extends StatefulWidget {
+  
+
+ 
   @override
   _AccountScreenState createState() => _AccountScreenState();
 }
@@ -19,7 +26,7 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   String? _userName;
   String? _profilePicPath;
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool _isEditingName = false;
   final ImagePicker _picker = ImagePicker();
   List<Map<String, dynamic>> _businesses = [];
@@ -64,6 +71,9 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _fetchBusinesses() async {
+    setState(() {
+      _isLoading=true;
+    });
     final token = await SessionHandlingViewModel().getToken();
     if (token == null || token.isEmpty) {
       setState(() {
@@ -83,16 +93,22 @@ class _AccountScreenState extends State<AccountScreen> {
       Uri.parse('https://srv562456.hstgr.cloud/api/auth/my-businesses'),
       headers: {'Authorization': '$token'},
     );
-    
+
     if (response.statusCode == 200) {
       final List businesses = json.decode(response.body);
       setState(() {
         _businesses = businesses.map((b) => b as Map<String, dynamic>).toList();
       });
     }
+    setState(() {
+      _isLoading=false;
+    });
   }
 
   Future<void> _fetchEvents() async {
+    setState(() {
+      _isLoading=true;
+    });
     final token = await SessionHandlingViewModel().getToken();
     final response = await https.get(
       Uri.parse('https://srv562456.hstgr.cloud/api/auth/my-events'),
@@ -101,17 +117,19 @@ class _AccountScreenState extends State<AccountScreen> {
     print("::: the events in screen :${response.body}");
     if (response.statusCode == 200) {
       final List events = json.decode(response.body);
-      
+
       setState(() {
         _events = events.map((e) => e as Map<String, dynamic>).toList();
-        
       });
     }
+    setState(() {
+      _isLoading=false;
+    });
   }
 
   Future<void> _logout() async {
     // final prefs = await SharedPreferences.getInstance();
-    final prefsf=await SessionHandlingViewModel();
+    final prefsf = await SessionHandlingViewModel();
     await prefsf.removeUser();
     // await prefs.remove('user_name');
     // await prefs.remove('profile_pic_path');
@@ -135,7 +153,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 radius: 60,
                 backgroundImage: _profilePicPath != null
                     ? FileImage(File(_profilePicPath!))
-                    : AssetImage('assets/default_profile.png') as ImageProvider,
+                    : AssetImage('assets/defaultimg.jpg') as ImageProvider,
               ),
             ),
             SizedBox(height: 10),
@@ -156,7 +174,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       : Padding(
                           padding: const EdgeInsets.only(left: 40),
                           child: Text(
-                            _userName??'',
+                            _userName ?? '',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -261,12 +279,31 @@ class _AccountScreenState extends State<AccountScreen> {
       itemCount: _businesses.length,
       itemBuilder: (context, index) {
         final business = _businesses[index];
+        // final allbussines=widget.business[in]
         return GestureDetector(
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ViewBuisnessScreen(business: business),
+                builder: (context) => ReviewsScreen(
+                    customRating: CustomRating(
+                        coverPicture: business['coverPicture'],
+                        type: business['category'],
+                        name: business['name'],
+                        address: business['location'],
+                        description: business['description'],
+                        profilePicture: business['profilePicture'],
+                        isVerified: business['isVerified'],
+                        phone: business['phone'],
+                        website: business['website'],
+                        socialMedia: business['socialMedia'],
+                        id: business['_id'], email: business['email'],),
+                    bottomModel: BottomModel(
+                        title: business['name'],
+                        image: business['coverPicture'],
+                        message: business['category'],
+                        time: business['name']),
+                    businessId: business['_id']),
               ),
             );
           },
@@ -321,72 +358,73 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _buildEventList() {
-    if (_events.isEmpty) {
-      print("::: print1");
-      return Center(
-        child: Text("No Events yet",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
-      );
-    }
-    return ListView.builder(
-      itemCount: _events.length,
-      itemBuilder: (context, index) {
-
-        final event = _events[index];
-        print("::: the image path is :${event['image']}");
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EventsEditScreen(event: event),
-              ),
-            );
-          },
-          child: Container(
-           
-            padding: EdgeInsets.all(10),
-            child: Row(
-              children: [
-                  
-                event['image'] != null
-               
-                    ? Container(
-                      
-                        height: 60,
-                        width: 80,
-                        decoration: BoxDecoration(
-                          
-                          borderRadius: BorderRadius.circular(11),
-                          image: DecorationImage(
-                            
-                            image:  NetworkImage(event['image']),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
-                    : Container(
-                        height: 70,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 143, 142, 142),
-                          borderRadius: BorderRadius.circular(11),
-                        ),
-                      ),
-                SizedBox(width: 13),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(event['name'], style: TextStyle(fontSize: 18)),
-                    SizedBox(height: 4),
-                    Text(event['date'], style: TextStyle(fontSize: 14)),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+  if (_events.isEmpty) {
+    print("::: print1");
+    return Center(
+      child: Text("No Events yet",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
     );
   }
+  return ListView.builder(
+    itemCount: _events.length,
+    itemBuilder: (context, index) {
+      final event = _events[index];
+      print("::: the image path is :${event['image']}");
+
+      // Determine if the image is a local file or a network URL
+      bool isNetworkImage = event['image'] != null && event['image'].startsWith('http');
+
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EventsEditScreen(event: event),
+            ),
+          );
+        },
+        child: Container(
+          padding: EdgeInsets.all(10),
+          child: Row(
+            children: [
+              if (event['image'] != null)
+                Container(
+                  height: 60,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(11),
+                    image: DecorationImage(
+                      image: isNetworkImage
+                          ? NetworkImage(event['image'])
+                          : FileImage(File(event['image'])) as ImageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              else
+                Container(
+                  height: 70,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 143, 142, 142),
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                ),
+              SizedBox(width: 13),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(event['name'], style: TextStyle(fontSize: 18)),
+                  SizedBox(height: 4),
+                  Text(event['date'], style: TextStyle(fontSize: 14)),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
 }

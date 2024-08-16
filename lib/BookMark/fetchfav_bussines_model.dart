@@ -29,6 +29,7 @@ class FetchFavruitBussineses {
     List<dynamic> pendingModifications;
     DateTime createdAt;
     DateTime updatedAt;
+      String email;
 
     FetchFavruitBussineses({
         required this.id,
@@ -51,6 +52,7 @@ class FetchFavruitBussineses {
         required this.pendingModifications,
         required this.createdAt,
         required this.updatedAt,
+        required this.email
     });
 
     factory FetchFavruitBussineses.fromJson(Map<String, dynamic> json) => FetchFavruitBussineses(
@@ -74,6 +76,7 @@ class FetchFavruitBussineses {
         pendingModifications: List<dynamic>.from(json["pendingModifications"].map((x) => x)),
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
+           email: json["email"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -97,5 +100,6 @@ class FetchFavruitBussineses {
         "pendingModifications": List<dynamic>.from(pendingModifications.map((x) => x)),
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
+         "email": email,
     };
 }

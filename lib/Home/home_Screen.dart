@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
    String searchQuery = '';
   List<Business> allBusinesses = [];
   List<Business> filteredBusinesses = [];
+   bool isLoading = false;
    @override
   void initState() {
     super.initState();
@@ -35,14 +36,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _fetchBusinesses() async {
+     setState(() {
+      isLoading = true;  // Start loading
+    });
     try {
       final businesses = await BusinessService().fetchBusinesses();
+       
+      
       setState(() {
         allBusinesses = businesses;
         filteredBusinesses = businesses;
       });
     } catch (e) {
       print('Error fetching businesses: $e');
+    }finally {
+      setState(() {
+        isLoading = false;  // Stop loading
+      });
     }
   }
 
@@ -65,21 +75,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: BottomNavBar(
-        initialPage: 0, // Home page index
-        pages: [
-          _buildHomeContent(context),
-          const Searchbusiness(),
-          EventListScreen(),
-          BookmarkedScreen(),
-          isLoggedIn() ? AccountScreen() : LoginPage(),
-        ],
+      body: RefreshIndicator(
+        onRefresh: _fetchBusinesses,
+        child: BottomNavBar(
+          initialPage: 0, // Home page index
+          pages: [
+            _buildHomeContent(context),
+            const Searchbusiness(),
+            EventListScreen(),
+            BookmarkedScreen(),
+            isLoggedIn() ? AccountScreen() : LoginPage(),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildHomeContent(BuildContext context) {
-    
+    // print("::: the all bussines is :${filteredBusinesses[0].category}");
     return SingleChildScrollView(
       child: SafeArea(
         child: Column(
@@ -227,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   MaterialPageRoute(
                                       builder: (context) => LISTCA(
                                             title: category.text.toString(),
-                                            iconPath: category.icon.toString(),
+                                            iconPath: category.icon.toString(), 
                                           )),
                                 );
                               },
@@ -353,79 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Widget _buildBusinessList(BuildContext context) {
-  //   return FutureBuilder<List<Business>>(
-  //     future: BusinessService().fetchBusinesses(),
-  //     builder: (context, snapshot) {
-  //       if (snapshot.connectionState == ConnectionState.waiting) {
-  //         return Center(child: CircularProgressIndicator());
-  //       } else if (snapshot.hasError) {
-  //         return Center(child: Text('Error: ${snapshot.error}'));
-  //       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-  //         return Center(child: Text('No approved businesses found'));
-  //       } else {
-  //         final approvedBusinesses =
-  //             snapshot.data!.where((business) => business.isApproved).toList();
-  //         return SizedBox(
-  //           height: 300,
-  //           width: double.infinity,
-  //           child: ListView.builder(
-  //             itemCount: approvedBusinesses.length,
-  //             scrollDirection: Axis.horizontal,
-  //             itemBuilder: (context, index) {
-  //               final business = approvedBusinesses[index];
-  //               return GestureDetector(
-  //                 onTap: () {
-  //                   Navigator.push(
-  //                     context,
-  //                     MaterialPageRoute(
-  //                       builder: (context) => ReviewsScreen(
-  //                         customRating: CustomRating(
-  //                           coverPicture: business.coverPicture,
-  //                           type: business.category,
-  //                           name: business.name,
-  //                           address: business.location,
-  //                           rating: business.rating,
-  //                           description: business.description,
-  //                           isVerified: business.isVerified,
-  //                           profilePicture: business.profilePicture,
-  //                           phone: business.phone,
-  //                           website: business.website,
-  //                           socialMedia: business.socialMedia, email:business.email, id: business.id,
-  //                         ),
-  //                         bottomModel: BottomModel(
-  //                           title: business.name,
-  //                           image: business.coverPicture,
-  //                           message: business.category,
-  //                           time: business.name,
-  //                         ),
-  //                         businessId: business.id,
-  //                       ),
-  //                     ),
-  //                   );
-  //                 },
-  //                 child: CustomRating(
-  //                   coverPicture: business.coverPicture,
-  //                   type: business.category,
-  //                   name: business.name,
-  //                   address: business.location,
-  //                   rating: business.rating,
-  //                   description: business.description,
-  //                   isVerified: business.isVerified,
-  //                   profilePicture: business.profilePicture,
-  //                   phone: business.phone,
-  //                   website: business.website,
-  //                   socialMedia: business.socialMedia,
-  //                   email: business.email, id: business.id,
-  //                 ),
-  //               );
-  //             },
-  //           ),
-  //         );
-  //       }
-  //     },
-  //   );
-  // }
+  
   Widget _buildBusinessList(BuildContext context) {
   return SizedBox(
     height: 300,
@@ -434,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
       itemCount: filteredBusinesses.length,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
-        print("::: the filter businuses are :${filteredBusinesses[index]}");
+        // print("::: the filter businuses are :${filteredBusinesses[index]}");
         final business = filteredBusinesses[index];
         print(":::: the businus id:${business.id}");
         return GestureDetector(
@@ -448,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     type: business.category,
                     name: business.name,
                     address: business.location,
-                    rating: business.rating,
+                    // rating: business.rating,
                     description: business.description,
                     isVerified: business.isVerified,
                     profilePicture: business.profilePicture,
@@ -474,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
             type: business.category,
             name: business.name,
             address: business.location,
-            rating: business.rating,
+            // rating: business.rating,
             description: business.description,
             isVerified: business.isVerified,
             profilePicture: business.profilePicture,
@@ -482,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
             website: business.website,
             socialMedia: business.socialMedia,
             email: business.email,
-            id: business.id,
+            id: business.id, 
           ),
         );
       },

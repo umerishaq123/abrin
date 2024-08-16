@@ -23,11 +23,42 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
+  // final TextEditingController _locationController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   File? _image;
   Position? location;
+    String? selectedCity;
+  String? selectedLocation;
+
+  String selectedCategory = 'Select a category:';
+  final List<String> cities = ['Conakry',];
+ 
+  final Map<String, List<String>> cityLocations = {
+    'Conakry': [
+      'Ratoma',
+      'Kaloum',
+      'Gbessia',
+      'Dixinn',
+      'Matoto',
+      'Tombolia',
+      'Lambanyi',
+      'Sonfonia',
+      'Matam',
+      'Kagbelen',
+      'Sanoyah',
+      'Kassa',
+    ],
+    //  'Abbbottabad': [
+    //   'fawaraChoke',
+    //   'Kehal',
+    //   'nawasher',
+    //   'bilalTown',
+    //   'Mandian',
+    //   'MalikPura',
+      
+    // ],
+  };
 
   Future<void> _pickImage() async {
     final pickedFile =
@@ -71,54 +102,54 @@ class _AddEventScreenState extends State<AddEventScreen> {
     }
   }
 
-  Future<void> pickLocation() async {
-    try {
-      bool serviceEnabled;
-      LocationPermission permission;
+  // Future<void> pickLocation() async {
+  //   try {
+  //     bool serviceEnabled;
+  //     LocationPermission permission;
 
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception(
-            'Location services are disabled. Please enable your location.');
-      }
+  //     serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //     if (!serviceEnabled) {
+  //       throw Exception(
+  //           'Location services are disabled. Please enable your location.');
+  //     }
 
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('Location permissions are denied');
-        }
-      }
+  //     permission = await Geolocator.checkPermission();
+  //     if (permission == LocationPermission.denied) {
+  //       permission = await Geolocator.requestPermission();
+  //       if (permission == LocationPermission.denied) {
+  //         throw Exception('Location permissions are denied');
+  //       }
+  //     }
 
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception(
-            'Location permissions are permanently denied. We cannot request permissions.');
-      }
+  //     if (permission == LocationPermission.deniedForever) {
+  //       throw Exception(
+  //           'Location permissions are permanently denied. We cannot request permissions.');
+  //     }
 
-      Position position = await Geolocator.getCurrentPosition();
-      setState(() {
-        location = position;
-      });
-      print('Picked Location: (${location!.latitude}, ${location!.longitude})');
-    } catch (e) {
-      print('Error fetching location: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error fetching location: Enable your location services.',
-            style: TextStyle(color: Colors.red),
-          ),
-        ),
-      );
-    }
-  }
+  //     Position position = await Geolocator.getCurrentPosition();
+  //     setState(() {
+  //       location = position;
+  //     });
+  //     print('Picked Location: (${location!.latitude}, ${location!.longitude})');
+  //   } catch (e) {
+  //     print('Error fetching location: $e');
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           'Error fetching location: Enable your location services.',
+  //           style: TextStyle(color: Colors.red),
+  //         ),
+  //       ),
+  //     );
+  //   }
+  // }
 
   Future<void> addEvent() async {
     if (_nameController.text.isNotEmpty &&
         _descriptionController.text.isNotEmpty &&
         _dateController.text.isNotEmpty &&
         _timeController.text.isNotEmpty &&
-        _locationController.text.isNotEmpty &&
+         selectedLocation!=null &&
         _image != null) {
       setState(() {
         _isLoading = true; // Start loading
@@ -145,7 +176,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         image: _image!.path,
         description: _descriptionController.text,
         name: _nameController.text,
-        location: _locationController.text,
+        location: '$selectedLocation',
         date: _dateController.text,
         time: _timeController.text,
       );
@@ -332,32 +363,72 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 6),
-            CustomTextField(
-              obscureText: false,
-              controller: _locationController,
-              labelText: 'Address:',
-              suffixIcon: IconButton(
-                icon: Icon(
-                  Icons.map,
-                  color: Colors.blue,
-                ),
-                onPressed: () async {
-                  // Use your location picker screen here
-                  String? result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LocationPickerScreen(),
-                    ),
-                  );
+            // SizedBox(height: 3),
+            // CustomTextField(
+            //   obscureText: false,
+            //   controller: _locationController,
+            //   labelText: 'Address:',
+            //   suffixIcon: IconButton(
+            //     icon: Icon(
+            //       Icons.map,
+            //       color: Colors.blue,
+            //     ),
+            //     onPressed: () async {
+            //       // Use your location picker screen here
+            //       String? result = await Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => LocationPickerScreen(),
+            //         ),
+            //       );
 
-                  if (result != null) {
-                    _locationController.text = result;
-                  }
-                },
-              ),
-            ),
+            //       if (result != null) {
+            //         _locationController.text = result;
+            //       }
+            //     },
+            //   ),
+            // ),
             SizedBox(height: 20),
+              DropdownButtonFormField<String>(
+                value: selectedCity,
+                onChanged: (value) {
+                  setState(() {
+                    selectedCity = value;
+                    selectedLocation = null; // Reset location on city change
+                  });
+                },
+                items: cities.map((city) {
+                  return DropdownMenuItem<String>(
+                    value: city,
+                    child: Text(city),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  labelText: 'City',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: selectedLocation,
+                onChanged: (value) {
+                  setState(() {
+                    selectedLocation = value;
+                  });
+                },
+                items: selectedCity != null
+                    ? cityLocations[selectedCity!]!
+                        .map((location) => DropdownMenuItem<String>(
+                              value: location,
+                              child: Text(location),
+                            ))
+                        .toList()
+                    : [],
+                decoration: InputDecoration(
+                  labelText: 'Location',
+                  border: OutlineInputBorder(),
+                ),
+              ),
             _isLoading
                 ? Center(child: CircularProgressIndicator())
                 : ElevatedButton(

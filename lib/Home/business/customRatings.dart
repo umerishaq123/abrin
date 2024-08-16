@@ -8,7 +8,7 @@ class CustomRating extends StatelessWidget {
   final String name;
   final String address;
   final String description;
-  final double rating;
+  // final double rating;
   final bool isVerified;
   final String profilePicture;
   final List<String>? galleryImages; 
@@ -26,7 +26,7 @@ class CustomRating extends StatelessWidget {
     required this.type,
     required this.name,
     required this.address,
-    required this.rating,
+    // required this.rating,
     required this.description,
     required this.profilePicture,
     required this.isVerified,
@@ -77,6 +77,8 @@ class CustomRating extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
+            
+           
             Text(
               type,
               style: const TextStyle(
@@ -117,20 +119,20 @@ class CustomRating extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Row(
-              children: [
-                RatingBar(
-                  size: 22,
-                  filledIcon: Icons.star,
-                  filledColor: Colors.blue,
-                  emptyColor: const Color.fromARGB(255, 222, 219, 219),
-                  emptyIcon: Icons.star,
-                  onRatingChanged: (value) => debugPrint('$value'),
-                  initialRating: rating,
-                  maxRating: 5,
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     RatingBar(
+            //       size: 22,
+            //       filledIcon: Icons.star,
+            //       filledColor: Colors.blue,
+            //       emptyColor: const Color.fromARGB(255, 222, 219, 219),
+            //       emptyIcon: Icons.star,
+            //       onRatingChanged: (value) => debugPrint('$value'),
+            //       // initialRating: rating,
+            //       maxRating: 5,
+            //     ),
+            //   ],
+            // ),
             const SizedBox(
               height: 10,
             ),

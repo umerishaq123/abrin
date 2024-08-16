@@ -169,11 +169,11 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
       coverPicture:
           _coverPicture?.path ?? widget.business['coverPicture'] ?? '',
       location: _addressController.text,
-      rating: widget.business['rating'],
+      // rating: widget.business['rating'],
       isApproved: widget.business['isApproved'],
       isVerified: true,
       profilePicture: '',
-      email: widget.business['email'],
+      // email: widget.business['email'],
       phone: widget.business['phone'],
       socialMedia: widget.business['socialMedia'],
       website: widget.business['website'],

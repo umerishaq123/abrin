@@ -26,17 +26,67 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
   final TextEditingController websiteController = TextEditingController();
   final TextEditingController socialMediaController = TextEditingController();
   bool _isLoading = false;
+   String? selectedCity;
+  String? selectedLocation;
 
   String selectedCategory = 'Select a category:';
+  final List<String> cities = ['Conakry',];
+ 
+  final Map<String, List<String>> cityLocations = {
+    'Conakry': [
+      'Ratoma',
+      'Kaloum',
+      'Gbessia',
+      'Dixinn',
+      'Matoto',
+      'Tombolia',
+      'Lambanyi',
+      'Sonfonia',
+      'Matam',
+      'Kagbelen',
+      'Sanoyah',
+      'Kassa',
+    ],
+    //  'Abbbottabad': [
+    //   'fawaraChoke',
+    //   'Kehal',
+    //   'nawasher',
+    //   'bilalTown',
+    //   'Mandian',
+    //   'MalikPura',
+      
+    // ],
+  };
   final List<String> categories = [
     'Select a category:',
-    'Restaurant',
-    'Shopping',
-    'Hotel',
-    'Entertainment',
-    'Tech',
-    'Services',
-    'Education',
+    ' Restaurant , Café , Dessert',
+    ' Entreprise événementielle',
+    " Hotel , Motel , Résidence",
+    ' Travailleur indépendant ',
+    ' Boulangerie , Patisserie',
+    ' Club , Bar , Lounge',
+    ' Salon , Spa',
+    'Vente en ligne',
+    ' Vente en boutique',
+    ' Hôpital , Pharmacie',
+    ' Immobilier ',
+    ' Supermarché , alimentation générale ',
+    ' Institution financière',
+    ' Sport , Gym',
+    'Transport , Livraison',
+    ' Station essence'
+        ' École , Université et Institut de formation',
+    ' Média et actualité',
+    ' Institution gouvernementale',
+    ' Plage , Plain air',
+    ' Garage auto et moto',
+    'Lavage auto et moto',
+    ' Pressing',
+    ' Police , Service d’urgence',
+    ' Voyage , Tourisme',
+    ' Infographie',
+    ' Mosquée , Église',
+    ' Autres'
   ];
 
   XFile? profilePicture;
@@ -88,154 +138,266 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
     }
   }
 
-  Future<void> pickLocation() async {
-    try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception(
-            'Location services are disabled. Please enable your location.');
-      }
+  // Future<void> pickLocation() async {
+  //   try {
+  //     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //     if (!serviceEnabled) {
+  //       throw Exception(
+  //           'Location services are disabled. Please enable your location.');
+  //     }
 
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('Location permissions are denied');
-        }
-      }
+  //     LocationPermission permission = await Geolocator.checkPermission();
+  //     if (permission == LocationPermission.denied) {
+  //       permission = await Geolocator.requestPermission();
+  //       if (permission == LocationPermission.denied) {
+  //         throw Exception('Location permissions are denied');
+  //       }
+  //     }
 
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception(
-            'Location permissions are permanently denied. We cannot request permissions.');
-      }
+  //     if (permission == LocationPermission.deniedForever) {
+  //       throw Exception(
+  //           'Location permissions are permanently denied. We cannot request permissions.');
+  //     }
 
-      Position position = await Geolocator.getCurrentPosition();
-      setState(() {
-        location = position;
-        addressController.text = '${position.latitude}, ${position.longitude}';
-      });
-      print('Picked Location: (${location!.latitude}, ${location!.longitude})');
-    } catch (e) {
-      print('Error fetching location: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error fetching location: Enable your location services.',
-            style: TextStyle(color: Colors.red),
-          ),
-        ),
-      );
-    }
-  }
+  //     Position position = await Geolocator.getCurrentPosition();
+  //     setState(() {
+  //       location = position;
+  //       addressController.text = '${position.latitude}, ${position.longitude}';
+  //     });
+  //     print('Picked Location: (${location!.latitude}, ${location!.longitude})');
+  //   } catch (e) {
+  //     print('Error fetching location: $e');
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           'Error fetching location: Enable your location services.',
+  //           style: TextStyle(color: Colors.red),
+  //         ),
+  //       ),
+  //     );
+  //   }
+  // }
+
+  // Future<void> addBusiness() async {
+  //   if (nameController.text.isEmpty ||
+  //       selectedCategory == 'Select a category:' ||
+  //       descriptionController.text.isEmpty ||
+  //      selectedLocation == null ||
+  //       profilePicture == null) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           'Please fill in all required fields',
+  //           style: TextStyle(color: Colors.red),
+  //         ),
+  //       ),
+  //     );
+  //     return;
+  //   }
+
+  //   final token = await SessionHandlingViewModel().getToken();
+  //   if (token == null || token.isEmpty) {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           'Error: Invalid token. Please login again.',
+  //           style: TextStyle(color: Colors.red),
+  //         ),
+  //       ),
+  //     );
+  //     return;
+  //   }
+
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+
+  //   try {
+  //     final url = Uri.parse('https://srv562456.hstgr.cloud/api/business/add');
+  //     final request = https.MultipartRequest('POST', url)
+  //       ..headers['Authorization'] = '$token'
+  //       ..fields['name'] = nameController.text
+  //       ..fields['category'] = selectedCategory
+  //       ..fields['description'] = descriptionController.text
+  //       ..fields['phone'] = phoneController.text
+  //       ..fields['email'] = emailController.text
+  //       ..fields['website'] = websiteController.text
+  //       ..fields['socialMedia'] = socialMediaController.text
+  //       ..fields['location'] = selectedLocation ?? "";
+
+  //     print('Location Data: ${request.fields['location']}');
+
+  //     if (profilePicture != null) {
+  //       request.files.add(await https.MultipartFile.fromPath(
+  //         'profilePicture',
+  //         profilePicture!.path,
+  //       ));
+  //     }
+
+  //     if (coverPicture != null) {
+  //       request.files.add(await https.MultipartFile.fromPath(
+  //         'coverPicture',
+  //         coverPicture!.path,
+  //       ));
+  //     }
+
+  //     for (var image in galleryImages) {
+  //       request.files.add(await https.MultipartFile.fromPath(
+  //         'gallery',
+  //         image.path,
+  //       ));
+  //     }
+
+  //     final response = await request.send();
+
+  //     if (response.statusCode == 200) {
+  //       print('Business Added Successfully');
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text(
+  //             'Business Added Successfully',
+  //             style: TextStyle(color: Colors.green),
+  //           ),
+  //         ),
+  //       );
+  //     } else {
+  //       final responseBody = await response.stream.bytesToString();
+  //       print('Failed to add business. Status code: ${response.statusCode}');
+  //       print('Response body: $responseBody');
+  //       throw Exception(
+  //           'Failed to add business. Status code: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Error adding business: $e');
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           'Error adding business: Something went wrong ',
+  //           style: TextStyle(color: Colors.red),
+  //         ),
+  //       ),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
+
+
 
   Future<void> addBusiness() async {
-    if (nameController.text.isEmpty ||
-        selectedCategory == 'Select a category:' ||
-        descriptionController.text.isEmpty ||
-        addressController.text.isEmpty ||
-        profilePicture == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please fill in all required fields',
-            style: TextStyle(color: Colors.red),
-          ),
+  if (nameController.text.isEmpty ||
+      selectedCategory == 'Select a category:' ||
+      descriptionController.text.isEmpty ||
+      selectedLocation == null ||
+      profilePicture == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Please fill in all required fields',
+          style: TextStyle(color: Colors.red),
         ),
-      );
-      return;
-    }
-
-    final token = await SessionHandlingViewModel().getToken();
-    if (token == null || token.isEmpty) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error: Invalid token. Please login again.',
-            style: TextStyle(color: Colors.red),
-          ),
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final url = Uri.parse('https://srv562456.hstgr.cloud/api/business/add');
-      final request = https.MultipartRequest('POST', url)
-        ..headers['Authorization'] = '$token'
-        ..fields['name'] = nameController.text
-        ..fields['category'] = selectedCategory
-        ..fields['description'] = descriptionController.text
-        ..fields['phone'] = phoneController.text
-        ..fields['email'] = emailController.text
-        ..fields['website'] = websiteController.text
-        ..fields['socialMedia'] = socialMediaController.text
-        ..fields['location'] = addressController.text;
-
-      print('Location Data: ${request.fields['location']}');
-
-      if (profilePicture != null) {
-        request.files.add(await https.MultipartFile.fromPath(
-          'profilePicture',
-          profilePicture!.path,
-        ));
-      }
-
-      if (coverPicture != null) {
-        request.files.add(await https.MultipartFile.fromPath(
-          'coverPicture',
-          coverPicture!.path,
-        ));
-      }
-
-      for (var image in galleryImages) {
-        request.files.add(await https.MultipartFile.fromPath(
-          'gallery',
-          image.path,
-        ));
-      }
-
-      final response = await request.send();
-
-      if (response.statusCode == 200) {
-        print('Business Added Successfully');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Business Added Successfully',
-              style: TextStyle(color: Colors.green),
-            ),
-          ),
-        );
-      } else {
-        final responseBody = await response.stream.bytesToString();
-        print('Failed to add business. Status code: ${response.statusCode}');
-        print('Response body: $responseBody');
-        throw Exception(
-            'Failed to add business. Status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error adding business: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error adding business: Something went wrong ',
-            style: TextStyle(color: Colors.red),
-          ),
-        ),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+      ),
+    );
+    return;
   }
+
+  final token = await SessionHandlingViewModel().getToken();
+  if (token == null || token.isEmpty) {
+    setState(() {
+      _isLoading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Error: Invalid token. Please login again.',
+          style: TextStyle(color: Colors.red),
+        ),
+      ),
+    );
+    return;
+  }
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    final url = Uri.parse('https://srv562456.hstgr.cloud/api/business/add');
+    final request = https.MultipartRequest('POST', url)
+      ..headers['Authorization'] = ' $token' // Use Bearer token prefix
+      ..fields['name'] = nameController.text
+      ..fields['category'] = selectedCategory
+      ..fields['description'] = descriptionController.text
+      ..fields['phone'] = phoneController.text
+      ..fields['email'] = emailController.text
+      ..fields['website'] = websiteController.text
+      ..fields['socialMedia'] = socialMediaController.text
+      ..fields['location'] = selectedLocation ?? ""
+      ..fields['city'] = selectedCity ?? "";
+
+    print('Location Data: ${request.fields['location']}');
+
+    if (profilePicture != null) {
+      request.files.add(await https.MultipartFile.fromPath(
+        'profilePicture',
+        profilePicture!.path,
+      ));
+    }
+
+    if (coverPicture != null) {
+      request.files.add(await https.MultipartFile.fromPath(
+        'coverPicture',
+        coverPicture!.path,
+      ));
+    }
+
+    for (var image in galleryImages) {
+      request.files.add(await https.MultipartFile.fromPath(
+        'gallery',
+        image.path,
+      ));
+    }
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      print('Business Added Successfully');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Business Added Successfully',
+            style: TextStyle(color: Colors.green),
+          ),
+        ),
+      );
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      print('Failed to add business. Status code: ${response.statusCode}');
+      print('Response body: $responseBody');
+      throw Exception(
+          'Failed to add business. Status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error adding business: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Error adding business: Something went wrong ',
+          style: TextStyle(color: Colors.red),
+        ),
+      ),
+    );
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -306,27 +468,60 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                  selectedItemBuilder: (BuildContext context) {
+                    return categories.map<Widget>((String item) {
+                      return Text(item);
+                    }).toList();
+                  },
+                  // Customizing the dropdown menu
+                  dropdownColor: Colors.white,
+                  isExpanded:
+                      true, // Allows the dropdown to take the full width of the parent
+                  menuMaxHeight: 200.0, // Maximum height of the dropdown list
                 ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  obscureText: false,
-                  controller: addressController,
-                  labelText: 'Adresse:',
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.map),
-                    onPressed: () async {
-                      String? result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => LocationPickerScreen()),
-                      );
 
-                      if (result != null) {
-                        addressController.text = result;
-                      }
-                    },
-                  ),
-                ),
+                // DropdownButtonFormField<String>(
+                //   value: selectedCategory,
+                //   items: categories.map((category) {
+                //     return DropdownMenuItem<String>(
+                //       value: category,
+                //       child: Text(category),
+                //     );
+                //   }).toList(),
+                //   onChanged: (value) {
+                //     setState(() {
+                //       selectedCategory = value!;
+                //     });
+                //   },
+                //   decoration: InputDecoration(
+                //     labelText: 'Category:',
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(12),
+                //     ),
+                //   ),
+                // ),
+
+                const SizedBox(height: 16),
+             g
+                // CustomTextField(
+                //   obscureText: false,
+                //   controller: addressController,
+                //   labelText: 'Adresse:',
+                //   suffixIcon: IconButton(
+                //     icon: Icon(Icons.map),
+                //     onPressed: () async {
+                //       String? result = await Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //             builder: (context) => LocationPickerScreen()),
+                //       );
+
+                //       if (result != null) {
+                //         addressController.text = result;
+                //       }
+                //     },
+                //   ),
+                // ),
                 const SizedBox(height: 16),
                 CustomTextField(
                   obscureText: false,

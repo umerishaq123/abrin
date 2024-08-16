@@ -1,12 +1,15 @@
-
+import 'package:abrin_app_new/Bussinesses/bussinessModel.dart';
+import 'package:abrin_app_new/Home/ReviewBusiness/BottomSheet.dart';
+import 'package:abrin_app_new/Home/ReviewBusiness/ReviewScreen.dart';
+import 'package:abrin_app_new/Home/business/customRatings.dart';
 import 'package:abrin_app_new/Search/business_detail.dart';
 import 'package:abrin_app_new/Search/localBusinesscategory.dart';
 import 'package:custom_rating_bar/custom_rating_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class Localbusinnescategores extends StatelessWidget {
-  final LocalBusinessCategory businescategory;
+class Localbusinnescategores extends StatefulWidget {
+  final Business businescategory;
   final LatLng latLng;
 
   const Localbusinnescategores({
@@ -15,12 +18,18 @@ class Localbusinnescategores extends StatelessWidget {
   });
 
   @override
+  State<Localbusinnescategores> createState() => _LocalbusinnescategoresState();
+}
+
+class _LocalbusinnescategoresState extends State<Localbusinnescategores> {
+  @override
   Widget build(BuildContext context) {
+    final bussinusdetail = widget.businescategory;
     return ListTile(
       leading: Container(
         height: 100,
         child: Image.network(
-          businescategory.imagePath,
+          widget.businescategory.profilePicture,
           width: 80,
           height: 100,
           fit: BoxFit.fill,
@@ -28,14 +37,14 @@ class Localbusinnescategores extends StatelessWidget {
       ),
       title: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: Text(businescategory.businessName)),
+          child: Text(widget.businescategory.name)),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(businescategory.category),
+          Text(widget.businescategory.category),
           SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Text(businescategory.location)),
+              child: Text(widget.businescategory.location)),
           // Row(
           //   children: [
           //     RatingBar(
@@ -52,16 +61,32 @@ class Localbusinnescategores extends StatelessWidget {
           // ),
         ],
       ),
-   
-   onTap: (){
-     Navigator.push(
+      onTap: () {
+        Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BusinessDetail(business: businescategory),
+            builder: (context) => ReviewsScreen(
+                customRating: CustomRating(
+                    coverPicture: bussinusdetail.coverPicture,
+                    type: bussinusdetail.category,
+                    name: bussinusdetail.name,
+                    address: bussinusdetail.location,
+                    description: bussinusdetail.description,
+                    profilePicture: bussinusdetail.profilePicture,
+                    isVerified: bussinusdetail.isVerified,
+                    phone: bussinusdetail.phone,
+                    website: bussinusdetail.website,
+                    socialMedia: bussinusdetail.socialMedia,
+                    id: bussinusdetail.socialMedia, email: bussinusdetail.email,),
+                bottomModel: BottomModel(
+                    title: bussinusdetail.name,
+                    image: bussinusdetail.coverPicture,
+                    message: bussinusdetail.category,
+                    time: bussinusdetail.name),
+                businessId: bussinusdetail.id),
           ),
         );
-   },
+      },
     );
- 
   }
 }

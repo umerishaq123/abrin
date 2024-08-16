@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Category {
   final IconData icon;
@@ -74,10 +75,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       icon: Icons.shopping_bag,
       label: 'Shopping',
       onTap: () {
-        launcher.launchUrl(
-          Uri.parse('https://www.google.com/maps/place/Builtinsoft'),
-          mode: launcher.LaunchMode.externalApplication,
-        );
+        // launcher.launchUrl(
+        //   Uri.parse('https://www.google.com/maps/place/Builtinsoft'),
+        //   mode: launcher.LaunchMode.externalApplication,
+        // );
       },
     ),
   ];
@@ -104,19 +105,29 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     }
   }
 
+  double _calculateContainerWidth(String text) {
+    final textPainter = TextPainter(
+      text: TextSpan(text: text, style: TextStyle(fontSize: 14)),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout(minWidth: 0, maxWidth: double.infinity);
+
+    return textPainter.size.width + 40; // Adjusting with padding and icon size
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Category> categories = [
-      Category(
-        icon: Icons.directions,
-        label: 'Direction',
-        onTap: () {
-          launcher.launchUrl(
-            Uri.parse('https://www.google.com/'),
-            mode: launcher.LaunchMode.externalApplication,
-          );
-        },
-      ),
+      // Category(
+      //   icon: Icons.directions,
+      //   label: 'Direction',
+      //   onTap: () {
+      //     launcher.launchUrl(
+      //       Uri.parse('https://www.google.com/'),
+      //       mode: launcher.LaunchMode.externalApplication,
+      //     );
+      //   },
+      // ),
       Category(
         icon: Icons.call,
         label: 'Call Now',
@@ -208,6 +219,12 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
         icon: Icons.bookmark,
         label: "Faviors",
         onTap: () {
+          print(":: button preesed");
+          Provider.of<BookmarkProvider>(context, listen: false)
+              .addtoFav(businessId: widget.customRating.id.toString());
+          setState(() {
+            _isFavorite = !_isFavorite;
+          });
           //bookmarkBusiness();
         },
       ),
@@ -221,7 +238,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             print(":::the url of biisnus is :${businessProfileUrl}");
             Share.share('Check out this business profile: $businessProfileUrl');
           }),
-      Category(icon: Icons.star_border, label: "Note", onTap: () {}),
+      // Category(icon: Icons.star_border, label: "Note", onTap: () {}),
     ];
     return Scaffold(
       backgroundColor: Colors.white,
@@ -517,35 +534,42 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                           //       );
                           //     })
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () async {
+                              if (await canLaunch(
+                                  widget.customRating.socialMedia)) {
+                                await launch(widget.customRating.socialMedia);
+                              } else {
+                                throw 'Could not launch ${widget.customRating.socialMedia}';
+                              }
+                            },
                             child: Container(
-                              child: Container(
-                                height: 40,
-                                width: 140,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(color: Colors.black),
-                                ),
-                                child: const Row(
-                                  children: [
-                                    Icon(
-                                      Icons.facebook,
-                                      size: 26,
-                                      color: Colors.blue,
+                              height: 40,
+                              width: 140,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color: Colors.black),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.facebook,
+                                    size: 26,
+                                    color: Colors.blue,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    'Social Account',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14,
                                     ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      'Social Account',
-                                      style: TextStyle(
-                                          color: Colors.grey, fontSize: 14),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
+                          )
                         ],
                       )
                     ],
@@ -595,7 +619,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                       height: 6,
                     ),
                     Text(
-                      widget.customRating.description,
+                      widget.customRating.address,
                       style: const TextStyle(
                         color: Colors.grey,
                       ),
@@ -644,57 +668,54 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                       ),
                     ),
                     Expanded(
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: categories1.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: categories1[index].onTap,
-                              child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 8),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        height: 40,
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          border:
-                                              Border.all(color: Colors.black),
-                                          color: selectedIndex == index
-                                              ? Colors.blue
-                                              : Colors.white,
+                      child:
+                          //  ListView.builder(
+                          //     scrollDirection: Axis.horizontal,
+                          //     itemCount: categories1.length,
+                          //     itemBuilder: (context, index) {
+                          //       return
+                          GestureDetector(
+                        onTap: () {},
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 40,
+                                  width: _calculateContainerWidth(widget
+                                      .customRating
+                                      .type), // Replace with your method for calculating width
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(color: Colors.black),
+                                  ),
+                                  child: Center(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.category,
+                                          size: 20,
+                                          color: Colors.blue,
                                         ),
-                                        child: Center(
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                categories1[index].icon,
-                                                size: 20,
-                                                color: Colors.blue,
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(
-                                                categories1[index].label,
-                                                style: const TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ],
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          widget.customRating.type,
+                                          style: const TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 14,
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ),
-                            );
-                          }),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      // }),
                     ),
                   ],
                 )),
@@ -737,370 +758,368 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   ),
                   Expanded(
                     child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: gallery.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              height: 50,
-                              width: 300,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 176, 171, 171)),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: gallery.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: 50,
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                color: Color.fromARGB(255, 176, 171, 171),
                               ),
-                              child: Row(children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ImageScreen(
-                                          imagePath:
-                                              widget.customRating.coverPicture,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ImageScreen(
+                                            imagePath: widget
+                                                .customRating.coverPicture,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                  child: Image.network(
-                                    widget.customRating.coverPicture,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Icon(Icons
-                                          .error); // Display an error icon if image fails to load
+                                      );
                                     },
+                                    child: Image.network(
+                                      widget.customRating.coverPicture,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Icon(Icons
+                                            .error); // Display an error icon if image fails to load
+                                      },
+                                    ),
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 4,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ImageScreen(
-                                          imagePath: widget
-                                              .customRating.profilePicture,
+                                SizedBox(width: 4),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ImageScreen(
+                                            imagePath: widget
+                                                .customRating.profilePicture,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                  child: Image.network(
-                                    widget.customRating.profilePicture,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Icon(Icons
-                                          .error); // Display an error icon if image fails to load
+                                      );
                                     },
+                                    child: Image.network(
+                                      widget.customRating.profilePicture,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Icon(Icons
+                                            .error); // Display an error icon if image fails to load
+                                      },
+                                    ),
                                   ),
                                 ),
-                              ]),
+                              ],
                             ),
-                          );
-                        }),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Color.fromARGB(255, 227, 226, 226),
-                  width: 1,
-                ),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.white,
-                    blurRadius: 10,
-                  ),
-                ],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Image(
-                              image: AssetImage('assets/images/check.png'),
-                              height: 15,
-                              width: 15,
-                            ),
-                            SizedBox(
-                              width: 6,
-                            ),
-                            Text("Ouvrez maintenant",
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w500)),
-                          ],
-                        ),
-                        PopupMenuButton(
-                            icon: Container(
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                border: Border.all(
-                                  color: Colors.black,
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.arrow_downward_rounded,
-                                size: 15,
-                              ),
-                            ),
-                            onSelected: (String result) {
-                              // Handle the selected menu item
-                              print('Selected: $result');
-                            },
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry<String>>[
-                                  const PopupMenuItem<String>(
-                                      child: Text('item1'), value: 'item1'),
-                                  const PopupMenuItem<String>(
-                                    value: 'Item 2',
-                                    child: Text('Item 2'),
-                                  ),
-                                  const PopupMenuItem<String>(
-                                    value: 'Item 3',
-                                    child: Text('Item 3'),
-                                  ),
-                                ]),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '${widget.customRating.address}',
-                          style: TextStyle(
-                            color: Colors.grey,
                           ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(
               height: 10,
             ),
-            GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (context) => BottomSheetContent(
-                      bottomReview: BottomReview(
-                          title: 'Connectz',
-                          image: 'assets/Icons/profile.png',
-                          message: 'some thing some thing i dont know',
-                          time: '2 hours ago',
-                          messicon: 'assets/Icons/icon profilecrd.jpg',
-                          Rating: '4.5')),
-                );
-              },
-              child: Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width * 0.9,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Color.fromARGB(255, 227, 226, 226),
-                    width: 1,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.white,
-                      blurRadius: 10,
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.message_rounded,
-                          color: Colors.blue,
-                        ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        Text(
-                          "connectz some thing some thing i dont know",
-                          style: TextStyle(fontSize: 14),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Color.fromARGB(255, 227, 226, 226),
-                  width: 1,
-                ),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.white,
-                    blurRadius: 10,
-                  ),
-                ],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Row(
-                    //   children: [
-                    //     CircleAvatar(
-                    //       radius: 20,
-                    //       backgroundImage: AssetImage(widget.bottomModel.image),
-                    //     ),
-                    //     const SizedBox(
-                    //       width: 10,
-                    //     ),
-                    //     Column(
-                    //       mainAxisAlignment: MainAxisAlignment.start,
-                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                    //       children: [
-                    //         Text(
-                    //           widget.bottomModel.title,
-                    //           style: TextStyle(fontSize: 20),
-                    //         ),
-                    //         Text(
-                    //           widget.bottomModel.time,
-                    //           style: TextStyle(fontSize: 14),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //     const SizedBox(
-                    //       width: 10,
-                    //     ),
-                    //   ],
-                    // ),
-                    // Text(
-                    //   widget.bottomModel.message,
-                    //   style: const TextStyle(
-                    //     fontSize: 20,
-                    //   ),
-                    //   overflow: TextOverflow.ellipsis,
-                    // ),
-                    const Text('Overall',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    StarRating(
-                      onRatingChanged: (rating) {
-                        setState(() {
-                          _overallRating = rating;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    const Text('Service',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    StarRating(
-                      onRatingChanged: (rating) {
-                        setState(() {
-                          _serviceRating = rating;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 10),
-                    const Text('Hospitality',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    StarRating(
-                      onRatingChanged: (rating) {
-                        setState(() {
-                          _hospitalityRating = rating;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 10),
-                    const Text('Pricing',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    StarRating(
-                      onRatingChanged: (rating) {
-                        setState(() {
-                          _pricingRating = rating;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                               print(":: button preesed");
-                              Provider.of<BookmarkProvider>(context,
-                                      listen: false)
-                                  .addtoFav(businessId: widget.customRating.id.toString());
-                              setState(() {
-                                _isFavorite = !_isFavorite;
-                              });
-                            },
-                            icon: Icon(
-                              _isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: _isFavorite ? Colors.red : null,
-                            )),
-                        IconButton(
-                            onPressed: () {
-                             
-                            },
-                            icon: Icon(Icons.messenger_outline_outlined)),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
+          //   Container(
+          //     width: MediaQuery.of(context).size.width * 0.9,
+          //     decoration: BoxDecoration(
+          //       border: Border.all(
+          //         color: Color.fromARGB(255, 227, 226, 226),
+          //         width: 1,
+          //       ),
+          //       boxShadow: const [
+          //         BoxShadow(
+          //           color: Colors.white,
+          //           blurRadius: 10,
+          //         ),
+          //       ],
+          //       borderRadius: BorderRadius.circular(10),
+          //     ),
+          //     child: Padding(
+          //       padding: EdgeInsets.all(8.0),
+          //       child: Column(
+          //         children: [
+          //           Row(
+          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             children: [
+          //               Row(
+          //                 children: [
+          //                   Image(
+          //                     image: AssetImage('assets/images/check.png'),
+          //                     height: 15,
+          //                     width: 15,
+          //                   ),
+          //                   SizedBox(
+          //                     width: 6,
+          //                   ),
+          //                   Text("Ouvrez maintenant",
+          //                       style: TextStyle(
+          //                           fontSize: 14, fontWeight: FontWeight.w500)),
+          //                 ],
+          //               ),
+          //               PopupMenuButton(
+          //                   icon: Container(
+          //                     height: 20,
+          //                     width: 20,
+          //                     decoration: BoxDecoration(
+          //                       borderRadius: BorderRadius.circular(50),
+          //                       border: Border.all(
+          //                         color: Colors.black,
+          //                       ),
+          //                     ),
+          //                     child: const Icon(
+          //                       Icons.arrow_downward_rounded,
+          //                       size: 15,
+          //                     ),
+          //                   ),
+          //                   onSelected: (String result) {
+          //                     // Handle the selected menu item
+          //                     print('Selected: $result');
+          //                   },
+          //                   itemBuilder: (BuildContext context) =>
+          //                       <PopupMenuEntry<String>>[
+          //                         const PopupMenuItem<String>(
+          //                             child: Text('item1'), value: 'item1'),
+          //                         const PopupMenuItem<String>(
+          //                           value: 'Item 2',
+          //                           child: Text('Item 2'),
+          //                         ),
+          //                         const PopupMenuItem<String>(
+          //                           value: 'Item 3',
+          //                           child: Text('Item 3'),
+          //                         ),
+          //                       ]),
+          //             ],
+          //           ),
+          //           Row(
+          //             mainAxisAlignment: MainAxisAlignment.center,
+          //             children: [
+          //               Text(
+          //                 '${widget.customRating.address}',
+          //                 style: TextStyle(
+          //                   color: Colors.grey,
+          //                 ),
+          //               ),
+          //             ],
+          //           )
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          //   const SizedBox(
+          //     height: 10,
+          //   ),
+          //   GestureDetector(
+          //     onTap: () {
+          //       showModalBottomSheet(
+          //         context: context,
+          //         isScrollControlled: true,
+          //         builder: (context) => BottomSheetContent(
+          //             bottomReview: BottomReview(
+          //                 title: 'Connectz',
+          //                 image: 'assets/Icons/profile.png',
+          //                 message: 'some thing some thing i dont know',
+          //                 time: '2 hours ago',
+          //                 messicon: 'assets/Icons/icon profilecrd.jpg',
+          //                 Rating: '4.5')),
+          //       );
+          //     },
+          //     child: Container(
+          //       height: 50,
+          //       width: MediaQuery.of(context).size.width * 0.9,
+          //       decoration: BoxDecoration(
+          //         border: Border.all(
+          //           color: Color.fromARGB(255, 227, 226, 226),
+          //           width: 1,
+          //         ),
+          //         boxShadow: const [
+          //           BoxShadow(
+          //             color: Colors.white,
+          //             blurRadius: 10,
+          //           ),
+          //         ],
+          //         borderRadius: BorderRadius.circular(10),
+          //       ),
+          //       child: const Padding(
+          //         padding: EdgeInsets.all(8.0),
+          //         child: SingleChildScrollView(
+          //           scrollDirection: Axis.horizontal,
+          //           child: Row(
+          //             children: [
+          //               Icon(
+          //                 Icons.message_rounded,
+          //                 color: Colors.blue,
+          //               ),
+          //               SizedBox(
+          //                 width: 4,
+          //               ),
+          //               Text(
+          //                 "connectz some thing some thing i dont know",
+          //                 style: TextStyle(fontSize: 14),
+          //               )
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          //   const SizedBox(
+          //     height: 20,
+          //   ),
+          //   Container(
+          //     width: MediaQuery.of(context).size.width * 0.9,
+          //     decoration: BoxDecoration(
+          //       border: Border.all(
+          //         color: Color.fromARGB(255, 227, 226, 226),
+          //         width: 1,
+          //       ),
+          //       boxShadow: const [
+          //         BoxShadow(
+          //           color: Colors.white,
+          //           blurRadius: 10,
+          //         ),
+          //       ],
+          //       borderRadius: BorderRadius.circular(10),
+          //     ),
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(8.0),
+          //       child: Column(
+          //         mainAxisAlignment: MainAxisAlignment.start,
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           // Row(
+          //           //   children: [
+          //           //     CircleAvatar(
+          //           //       radius: 20,
+          //           //       backgroundImage: AssetImage(widget.bottomModel.image),
+          //           //     ),
+          //           //     const SizedBox(
+          //           //       width: 10,
+          //           //     ),
+          //           //     Column(
+          //           //       mainAxisAlignment: MainAxisAlignment.start,
+          //           //       crossAxisAlignment: CrossAxisAlignment.start,
+          //           //       children: [
+          //           //         Text(
+          //           //           widget.bottomModel.title,
+          //           //           style: TextStyle(fontSize: 20),
+          //           //         ),
+          //           //         Text(
+          //           //           widget.bottomModel.time,
+          //           //           style: TextStyle(fontSize: 14),
+          //           //         ),
+          //           //       ],
+          //           //     ),
+          //           //     const SizedBox(
+          //           //       width: 10,
+          //           //     ),
+          //           //   ],
+          //           // ),
+          //           // Text(
+          //           //   widget.bottomModel.message,
+          //           //   style: const TextStyle(
+          //           //     fontSize: 20,
+          //           //   ),
+          //           //   overflow: TextOverflow.ellipsis,
+          //           // ),
+          //           const Text('Overall',
+          //               style: TextStyle(fontWeight: FontWeight.bold)),
+          //           StarRating(
+          //             onRatingChanged: (rating) {
+          //               setState(() {
+          //                 _overallRating = rating;
+          //               });
+          //             },
+          //           ),
+          //           const SizedBox(height: 10),
+          //           const Text('Service',
+          //               style: TextStyle(fontWeight: FontWeight.bold)),
+          //           StarRating(
+          //             onRatingChanged: (rating) {
+          //               setState(() {
+          //                 _serviceRating = rating;
+          //               });
+          //             },
+          //           ),
+          //           SizedBox(height: 10),
+          //           const Text('Hospitality',
+          //               style: TextStyle(fontWeight: FontWeight.bold)),
+          //           StarRating(
+          //             onRatingChanged: (rating) {
+          //               setState(() {
+          //                 _hospitalityRating = rating;
+          //               });
+          //             },
+          //           ),
+          //           SizedBox(height: 10),
+          //           const Text('Pricing',
+          //               style: TextStyle(fontWeight: FontWeight.bold)),
+          //           StarRating(
+          //             onRatingChanged: (rating) {
+          //               setState(() {
+          //                 _pricingRating = rating;
+          //               });
+          //             },
+          //           ),
+          //           SizedBox(height: 10),
+          //           Row(
+          //             children: [
+          //               IconButton(
+          //                   onPressed: () {},
+          //                   icon: Icon(
+          //                     _isFavorite
+          //                         ? Icons.favorite
+          //                         : Icons.favorite_border,
+          //                     color: _isFavorite ? Colors.red : null,
+          //                   )),
+          //               IconButton(
+          //                   onPressed: () {},
+          //                   icon: Icon(Icons.messenger_outline_outlined)),
+          //             ],
+          //           )
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          //   const SizedBox(
+          //     height: 30,
+          //   ),
 
-            // Container(
-            //     height: 100,
-            //     width: MediaQuery.of(context).size.width * 0.9,
-            //     child: const Column(
-            //       children: [
-            //         Icon(
-            //           Icons.message_rounded,
-            //           size: 30,
-            //           color: Colors.grey,
-            //         ),
-            //         SizedBox(
-            //           height: 5,
-            //         ),
-            //         Text(
-            //           "connectz ",
-            //           style: TextStyle(fontSize: 14, color: Colors.grey),
-            //         )
-            //       ],
-            //     ))
+          //   // Container(
+          //   //     height: 100,
+          //   //     width: MediaQuery.of(context).size.width * 0.9,
+          //   //     child: const Column(
+          //   //       children: [
+          //   //         Icon(
+          //   //           Icons.message_rounded,
+          //   //           size: 30,
+          //   //           color: Colors.grey,
+          //   //         ),
+          //   //         SizedBox(
+          //   //           height: 5,
+          //   //         ),
+          //   //         Text(
+          //   //           "connectz ",
+          //   //           style: TextStyle(fontSize: 14, color: Colors.grey),
+          //   //         )
+          //   //       ],
+          //   //     ))
           ],
         ),
       ),
