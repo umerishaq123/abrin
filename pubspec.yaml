@@ -52,6 +52,7 @@ dependencies:
   readmore: ^3.0.0
   permission_handler: ^11.3.1
   fluttertoast: ^8.2.8
+  another_flushbar: ^1.12.30
   
 
 dev_dependencies:

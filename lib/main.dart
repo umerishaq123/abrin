@@ -25,6 +25,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => BookmarkProvider(),
         ),
+         ChangeNotifierProvider(
+          create: (_) => SessionHandlingViewModel(),
+        ),
       ],
       // ChangeNotifierProvider(
       //   create: (ctx) => AuthProvider(),

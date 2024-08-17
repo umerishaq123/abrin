@@ -581,7 +581,7 @@ class _SearchbusinessState extends State<Searchbusiness> {
                               : _searchResults[index];
                           return Localbusinnescategores(
                             businescategory: item,
-                            latLng: LatLng(28.3901, 70.3300),
+                            // latLng: LatLng(28.3901, 70.3300),
                           );
                         },
                       ),

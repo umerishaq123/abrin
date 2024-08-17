@@ -13,7 +13,7 @@ class SessionHandlingViewModel with ChangeNotifier {
     try {
       final SharedPreferences sp = await SharedPreferences.getInstance();
       await sp.setString('Authorization', token);
-      notifyListeners();
+      // notifyListeners();
       return true; // Token saved successfully
     } catch (e) {
       print('Error saving token: $e');
@@ -27,29 +27,20 @@ class SessionHandlingViewModel with ChangeNotifier {
       final SharedPreferences sp = await SharedPreferences.getInstance();
       final String? token = sp.getString('Authorization');
       print("::: the token is here in session : $token");
-      notifyListeners();
+      // notifyListeners();
       return token;
     } catch (e) {
       print('Error getting token: $e');
       return null;
     }
   }
-Future<void> refreshToken() async {
-    // Example logic to refresh token
-    try {
-      // Call your token refresh API
-      // Update _token and _tokenExpiry based on the refreshed token
-    } catch (e) {
-      print('Error refreshing token: $e');
-      throw Exception('Failed to refresh token');
-    }
-  }
+
 
   
     Future removeUser() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     sp.remove('Authorization');
-    notifyListeners();
+    // notifyListeners();
     return sp.clear();
   }
 }

@@ -247,12 +247,12 @@ class _AccountScreenState extends State<AccountScreen> {
           alignment: Alignment.bottomRight,
           child: Container(
             height: 42,
-            width: 106,
+            width: MediaQuery.of(context).size.width*0.4,
             child: FloatingActionButton.extended(
               onPressed: _logout,
               icon: Icon(Icons.logout),
               label: Text(
-                "Logout",
+                "Déconnexion",
                 style: TextStyle(fontSize: 16),
               ),
               backgroundColor: Color.fromARGB(255, 235, 101, 91),
@@ -297,7 +297,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         phone: business['phone'],
                         website: business['website'],
                         socialMedia: business['socialMedia'],
-                        id: business['_id'], email: business['email'],),
+                        id: business['_id'], email: business['email'], city: business['city'],),
                     bottomModel: BottomModel(
                         title: business['name'],
                         image: business['coverPicture'],
@@ -334,20 +334,24 @@ class _AccountScreenState extends State<AccountScreen> {
                 SizedBox(
                   width: 13,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(business['name'],
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w500)),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Text(business['category'],
-                        style: TextStyle(
-                          fontSize: 16,
-                        )),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(business['name'],
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w500)),
+                      SizedBox(
+                        height: 4,
+                      ),
+                      Text(business['category'],
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                           overflow: TextOverflow.ellipsis,
+                          ),
+                    ],
+                  ),
                 ),
               ],
             ),

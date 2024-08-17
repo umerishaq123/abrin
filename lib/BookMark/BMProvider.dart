@@ -4,6 +4,7 @@ import 'package:abrin_app_new/BookMark/BMmodel.dart';
 import 'package:abrin_app_new/BookMark/addto_fav_model.dart';
 import 'package:abrin_app_new/BookMark/fetchfav_bussines_model.dart';
 import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
+import 'package:abrin_app_new/utilis/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -72,7 +73,7 @@ Future<void> addtoFav({required String businessId}) async {
       final result = addtofavFromJson(responseBody);
       final msg=result.msg;
       Fluttertoast.showToast(
-        msg: msg,
+        msg: ' Ajouté dans les favoris avec succès',
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.green,
@@ -84,13 +85,7 @@ Future<void> addtoFav({required String businessId}) async {
       print('Request failed with status: ${response.statusCode}');
       print('Response Body: ${response.body}');
      
-      Fluttertoast.showToast(
-        msg: 'bussinus not found',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
+      Utils.toastMessage('Entreprises introuvables');
     }
   } catch (e) {
     print('Error: $e');

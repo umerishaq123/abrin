@@ -10,6 +10,7 @@ import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
 import 'package:abrin_app_new/aouth/signup.dart';
 import 'package:abrin_app_new/componets/modelCategories.dart';
 import 'package:abrin_app_new/componets/widgets.dart';
+import 'package:abrin_app_new/utilis/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,12 +37,21 @@ class _LoginPageState extends State<LoginPage> {
     final String email = _emailController.text;
     final String password = _passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all the fields')),
-      );
-      return;
+    // if (email.isEmpty || password.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Please fill all the fields')),
+    //   );
+    //   return;
+    // }
+     if(email.isEmpty&& password.isEmpty){
+      Utils.snackBar('Veuillez remplir tous les champs', context);
     }
+   else if(email.isEmpty){
+      Utils.snackBar('Veuillez entrer un email', context);
+    }else if(password.isEmpty){
+      Utils.snackBar('Veuillez entrer un mot de passe', context);
+    }
+    
 
     setState(() {
       _isLoading = true;
@@ -97,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: ${response.reasonPhrase}')),
+          SnackBar(content: Text('Login failed')),
         );
       }
     } catch (e) {
@@ -115,6 +125,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(onPressed: (){
+          Navigator.pop(context);
+        }, icon: Icon(Icons.arrow_back,color: Colors.blue,)),
+      ),
       backgroundColor: Colors.white,
       body: Center(
         child: Padding(
@@ -175,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                 _isLoading
                     ? CircularProgressIndicator()
                     : CustomButton(
-                        text: 'Login',
+                        text: 'Se connecter ',
                         onPressed: _login,
                       ),
                 SizedBox(height: 16),
@@ -183,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Don't have an account?",
+                      "Vous n'avez pas de compte ?",
                       style: TextStyle(
                         color: Colors.black54,
                         fontSize: 17,
@@ -197,7 +212,7 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                       child: Text(
-                        "SignUp",
+                        "S'inscrire",
                         style: TextStyle(
                           color: Colors.blue,
                           fontSize: 18,

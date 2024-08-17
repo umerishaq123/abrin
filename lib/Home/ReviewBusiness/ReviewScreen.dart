@@ -3,9 +3,13 @@ import 'package:abrin_app_new/Home/ReviewBusiness/BottomSheet.dart';
 import 'package:abrin_app_new/Home/ReviewBusiness/HASFR.dart';
 import 'package:abrin_app_new/Home/ReviewBusiness/images_viewer_screen.dart';
 import 'package:abrin_app_new/Home/business/customRatings.dart';
+import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
+import 'package:abrin_app_new/aouth/signup.dart';
+import 'package:abrin_app_new/utilis/utils.dart';
 import 'package:custom_rating_bar/custom_rating_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:readmore/readmore.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 import 'package:permission_handler/permission_handler.dart';
@@ -118,16 +122,16 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Category> categories = [
-      // Category(
-      //   icon: Icons.directions,
-      //   label: 'Direction',
-      //   onTap: () {
-      //     launcher.launchUrl(
-      //       Uri.parse('https://www.google.com/'),
-      //       mode: launcher.LaunchMode.externalApplication,
-      //     );
-      //   },
-      // ),
+      Category(
+        icon: Icons.directions,
+        label: widget.customRating.city+"/"+widget.customRating.address,
+        onTap: () {
+          // launcher.launchUrl(
+          //   Uri.parse('https://www.google.com/'),
+          //   mode: launcher.LaunchMode.externalApplication,
+          // );
+        },
+      ),
       Category(
         icon: Icons.call,
         label: 'Call Now',
@@ -135,7 +139,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           print('Call Now button pressed');
 
           // Hardcoded phone number for testing
-          final phoneNumber = '03127032001';
+          final phoneNumber = widget.customRating.phone;
           print("::: the phone number is: $phoneNumber");
 
           if (phoneNumber.isNotEmpty) {
@@ -158,7 +162,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               print('Error launching URL: $e');
             }
           } else {
-            print('Phone number is empty');
+          Utils.toastMessage('invalid phoneNumber/null phoneNumber');
           }
         },
       ),
@@ -185,7 +189,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               print('Could not launch URL: $e');
             });
           } else {
-            print('Website URL is not provided or invalid.');
+            Utils.toastMessage('invalid website url');
           }
         },
       ),
@@ -211,20 +215,35 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               print('Could not launch email client: $e');
             });
           } else {
-            print('Email address is not provided or invalid.');
+            Utils.toastMessage('email is not found');
           }
         },
       ),
       Category(
         icon: Icons.bookmark,
-        label: "Faviors",
-        onTap: () {
+        label: " Favoris",
+        onTap: () async {
           print(":: button preesed");
-          Provider.of<BookmarkProvider>(context, listen: false)
-              .addtoFav(businessId: widget.customRating.id.toString());
-          setState(() {
-            _isFavorite = !_isFavorite;
-          });
+          final token = await SessionHandlingViewModel().getToken();
+          if (token != null) {
+            Provider.of<BookmarkProvider>(context, listen: false)
+                .addtoFav(businessId: widget.customRating.id.toString());
+            setState(() {
+              _isFavorite = !_isFavorite;
+            });
+          } else {
+            Utils.snackBar("s'il vous plaît, inscrivez-vous d'abord !", context);
+           Future.delayed(Duration(seconds: 3), () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SignupPage(), // Replace with your Signup screen widget
+      ),
+    );
+  }
+  );
+          }
+
           //bookmarkBusiness();
         },
       ),
@@ -318,13 +337,15 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 const SizedBox(
                   width: 5,
                 ),
-                Container(
+                if (widget.customRating.isVerified)
+                  Container(
                     height: 18,
                     width: 18,
                     child: Image.asset(
                       "assets/images/check.png",
                       fit: BoxFit.cover,
-                    )),
+                    ),
+                  ),
               ],
             ),
             // Row(
@@ -451,24 +472,27 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                         : Colors.white,
                                   ),
                                   child: Center(
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          categories[index].icon,
-                                          size: 20,
-                                          color: Colors.blue,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          categories[index].label,
-                                          style: const TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 14,
+                                    child: SingleChildScrollView(
+                                       scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            categories[index].icon,
+                                            size: 20,
+                                            color: Colors.blue,
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            categories[index].label,
+                                            style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -560,7 +584,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                     width: 5,
                                   ),
                                   Text(
-                                    'Social Account',
+                                    'Compte social',
                                     style: TextStyle(
                                       color: Colors.grey,
                                       fontSize: 14,
@@ -598,33 +622,45 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               ),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(
-                          Icons.description,
-                          color: Colors.blue,
-                        ),
-                        SizedBox(
-                          width: 6,
-                        ),
-                        Text("Description",
-                            style: TextStyle(
-                              fontSize: 20,
-                            )),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      widget.customRating.address,
-                      style: const TextStyle(
-                        color: Colors.grey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(
+                            Icons.description,
+                            color: Colors.blue,
+                          ),
+                          SizedBox(
+                            width: 6,
+                          ),
+                          Text("Description",
+                              style: TextStyle(
+                                fontSize: 20,
+                              )),
+                        ],
                       ),
-                    )
-                  ],
+                      const SizedBox(
+                        height: 6,
+                      ),
+                      ReadMoreText(
+                         widget.customRating.description,
+                                  trimCollapsedText: 'show more',
+                                  trimExpandedText: 'show less',
+                                  trimLines: 2,
+                                  trimMode: TrimMode.Line,
+                                  trimLength: 240,
+                                  
+                                  colorClickableText: Colors.grey,
+                      )
+                      // Text(
+                      //   widget.customRating.description,
+                      //   style: const TextStyle(
+                      //     color: Colors.grey,
+                      //   ),
+                      // )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -681,32 +717,48 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                             padding: const EdgeInsets.only(left: 8),
                             child: Row(
                               children: [
-                                Container(
-                                  height: 40,
-                                  width: _calculateContainerWidth(widget
-                                      .customRating
-                                      .type), // Replace with your method for calculating width
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(color: Colors.black),
-                                  ),
-                                  child: Center(
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.category,
-                                          size: 20,
-                                          color: Colors.blue,
-                                        ),
-                                        const SizedBox(width: 5),
-                                        Text(
-                                          widget.customRating.type,
-                                          style: const TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 14,
+                                Flexible(
+                                  child: Container(
+                                    height: 40,
+                                    width: _calculateContainerWidth(widget
+                                        .customRating
+                                        .type), // Replace with your method for calculating width
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(color: Colors.black),
+                                    ),
+                                    child: Center(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.category,
+                                            size: 20,
+                                            color: Colors.blue,
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(width: 5),
+                                          Flexible(
+                                            child: ReadMoreText(
+                                               widget.customRating.type,
+                                                                                trimCollapsedText: 'show more',
+                                                                                trimExpandedText: 'show less',
+                                                                                trimLines: 2,
+                                                                                trimMode: TrimMode.Line,
+                                                                                trimLength: 240,
+                                                                                
+                                                                                colorClickableText: Colors.grey,
+                                            ),
+                                          )
+                                          // Text(
+                                          //   ReadMoreText(
+                                              
+                                          //   ),
+                                          //   style: const TextStyle(
+                                          //     color: Colors.grey,
+                                          //     fontSize: 14,
+                                          //   ),
+                                          // ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 )
@@ -836,290 +888,290 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             const SizedBox(
               height: 10,
             ),
-          //   Container(
-          //     width: MediaQuery.of(context).size.width * 0.9,
-          //     decoration: BoxDecoration(
-          //       border: Border.all(
-          //         color: Color.fromARGB(255, 227, 226, 226),
-          //         width: 1,
-          //       ),
-          //       boxShadow: const [
-          //         BoxShadow(
-          //           color: Colors.white,
-          //           blurRadius: 10,
-          //         ),
-          //       ],
-          //       borderRadius: BorderRadius.circular(10),
-          //     ),
-          //     child: Padding(
-          //       padding: EdgeInsets.all(8.0),
-          //       child: Column(
-          //         children: [
-          //           Row(
-          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //             children: [
-          //               Row(
-          //                 children: [
-          //                   Image(
-          //                     image: AssetImage('assets/images/check.png'),
-          //                     height: 15,
-          //                     width: 15,
-          //                   ),
-          //                   SizedBox(
-          //                     width: 6,
-          //                   ),
-          //                   Text("Ouvrez maintenant",
-          //                       style: TextStyle(
-          //                           fontSize: 14, fontWeight: FontWeight.w500)),
-          //                 ],
-          //               ),
-          //               PopupMenuButton(
-          //                   icon: Container(
-          //                     height: 20,
-          //                     width: 20,
-          //                     decoration: BoxDecoration(
-          //                       borderRadius: BorderRadius.circular(50),
-          //                       border: Border.all(
-          //                         color: Colors.black,
-          //                       ),
-          //                     ),
-          //                     child: const Icon(
-          //                       Icons.arrow_downward_rounded,
-          //                       size: 15,
-          //                     ),
-          //                   ),
-          //                   onSelected: (String result) {
-          //                     // Handle the selected menu item
-          //                     print('Selected: $result');
-          //                   },
-          //                   itemBuilder: (BuildContext context) =>
-          //                       <PopupMenuEntry<String>>[
-          //                         const PopupMenuItem<String>(
-          //                             child: Text('item1'), value: 'item1'),
-          //                         const PopupMenuItem<String>(
-          //                           value: 'Item 2',
-          //                           child: Text('Item 2'),
-          //                         ),
-          //                         const PopupMenuItem<String>(
-          //                           value: 'Item 3',
-          //                           child: Text('Item 3'),
-          //                         ),
-          //                       ]),
-          //             ],
-          //           ),
-          //           Row(
-          //             mainAxisAlignment: MainAxisAlignment.center,
-          //             children: [
-          //               Text(
-          //                 '${widget.customRating.address}',
-          //                 style: TextStyle(
-          //                   color: Colors.grey,
-          //                 ),
-          //               ),
-          //             ],
-          //           )
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          //   const SizedBox(
-          //     height: 10,
-          //   ),
-          //   GestureDetector(
-          //     onTap: () {
-          //       showModalBottomSheet(
-          //         context: context,
-          //         isScrollControlled: true,
-          //         builder: (context) => BottomSheetContent(
-          //             bottomReview: BottomReview(
-          //                 title: 'Connectz',
-          //                 image: 'assets/Icons/profile.png',
-          //                 message: 'some thing some thing i dont know',
-          //                 time: '2 hours ago',
-          //                 messicon: 'assets/Icons/icon profilecrd.jpg',
-          //                 Rating: '4.5')),
-          //       );
-          //     },
-          //     child: Container(
-          //       height: 50,
-          //       width: MediaQuery.of(context).size.width * 0.9,
-          //       decoration: BoxDecoration(
-          //         border: Border.all(
-          //           color: Color.fromARGB(255, 227, 226, 226),
-          //           width: 1,
-          //         ),
-          //         boxShadow: const [
-          //           BoxShadow(
-          //             color: Colors.white,
-          //             blurRadius: 10,
-          //           ),
-          //         ],
-          //         borderRadius: BorderRadius.circular(10),
-          //       ),
-          //       child: const Padding(
-          //         padding: EdgeInsets.all(8.0),
-          //         child: SingleChildScrollView(
-          //           scrollDirection: Axis.horizontal,
-          //           child: Row(
-          //             children: [
-          //               Icon(
-          //                 Icons.message_rounded,
-          //                 color: Colors.blue,
-          //               ),
-          //               SizedBox(
-          //                 width: 4,
-          //               ),
-          //               Text(
-          //                 "connectz some thing some thing i dont know",
-          //                 style: TextStyle(fontSize: 14),
-          //               )
-          //             ],
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          //   const SizedBox(
-          //     height: 20,
-          //   ),
-          //   Container(
-          //     width: MediaQuery.of(context).size.width * 0.9,
-          //     decoration: BoxDecoration(
-          //       border: Border.all(
-          //         color: Color.fromARGB(255, 227, 226, 226),
-          //         width: 1,
-          //       ),
-          //       boxShadow: const [
-          //         BoxShadow(
-          //           color: Colors.white,
-          //           blurRadius: 10,
-          //         ),
-          //       ],
-          //       borderRadius: BorderRadius.circular(10),
-          //     ),
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(8.0),
-          //       child: Column(
-          //         mainAxisAlignment: MainAxisAlignment.start,
-          //         crossAxisAlignment: CrossAxisAlignment.start,
-          //         children: [
-          //           // Row(
-          //           //   children: [
-          //           //     CircleAvatar(
-          //           //       radius: 20,
-          //           //       backgroundImage: AssetImage(widget.bottomModel.image),
-          //           //     ),
-          //           //     const SizedBox(
-          //           //       width: 10,
-          //           //     ),
-          //           //     Column(
-          //           //       mainAxisAlignment: MainAxisAlignment.start,
-          //           //       crossAxisAlignment: CrossAxisAlignment.start,
-          //           //       children: [
-          //           //         Text(
-          //           //           widget.bottomModel.title,
-          //           //           style: TextStyle(fontSize: 20),
-          //           //         ),
-          //           //         Text(
-          //           //           widget.bottomModel.time,
-          //           //           style: TextStyle(fontSize: 14),
-          //           //         ),
-          //           //       ],
-          //           //     ),
-          //           //     const SizedBox(
-          //           //       width: 10,
-          //           //     ),
-          //           //   ],
-          //           // ),
-          //           // Text(
-          //           //   widget.bottomModel.message,
-          //           //   style: const TextStyle(
-          //           //     fontSize: 20,
-          //           //   ),
-          //           //   overflow: TextOverflow.ellipsis,
-          //           // ),
-          //           const Text('Overall',
-          //               style: TextStyle(fontWeight: FontWeight.bold)),
-          //           StarRating(
-          //             onRatingChanged: (rating) {
-          //               setState(() {
-          //                 _overallRating = rating;
-          //               });
-          //             },
-          //           ),
-          //           const SizedBox(height: 10),
-          //           const Text('Service',
-          //               style: TextStyle(fontWeight: FontWeight.bold)),
-          //           StarRating(
-          //             onRatingChanged: (rating) {
-          //               setState(() {
-          //                 _serviceRating = rating;
-          //               });
-          //             },
-          //           ),
-          //           SizedBox(height: 10),
-          //           const Text('Hospitality',
-          //               style: TextStyle(fontWeight: FontWeight.bold)),
-          //           StarRating(
-          //             onRatingChanged: (rating) {
-          //               setState(() {
-          //                 _hospitalityRating = rating;
-          //               });
-          //             },
-          //           ),
-          //           SizedBox(height: 10),
-          //           const Text('Pricing',
-          //               style: TextStyle(fontWeight: FontWeight.bold)),
-          //           StarRating(
-          //             onRatingChanged: (rating) {
-          //               setState(() {
-          //                 _pricingRating = rating;
-          //               });
-          //             },
-          //           ),
-          //           SizedBox(height: 10),
-          //           Row(
-          //             children: [
-          //               IconButton(
-          //                   onPressed: () {},
-          //                   icon: Icon(
-          //                     _isFavorite
-          //                         ? Icons.favorite
-          //                         : Icons.favorite_border,
-          //                     color: _isFavorite ? Colors.red : null,
-          //                   )),
-          //               IconButton(
-          //                   onPressed: () {},
-          //                   icon: Icon(Icons.messenger_outline_outlined)),
-          //             ],
-          //           )
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          //   const SizedBox(
-          //     height: 30,
-          //   ),
+            //   Container(
+            //     width: MediaQuery.of(context).size.width * 0.9,
+            //     decoration: BoxDecoration(
+            //       border: Border.all(
+            //         color: Color.fromARGB(255, 227, 226, 226),
+            //         width: 1,
+            //       ),
+            //       boxShadow: const [
+            //         BoxShadow(
+            //           color: Colors.white,
+            //           blurRadius: 10,
+            //         ),
+            //       ],
+            //       borderRadius: BorderRadius.circular(10),
+            //     ),
+            //     child: Padding(
+            //       padding: EdgeInsets.all(8.0),
+            //       child: Column(
+            //         children: [
+            //           Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             children: [
+            //               Row(
+            //                 children: [
+            //                   Image(
+            //                     image: AssetImage('assets/images/check.png'),
+            //                     height: 15,
+            //                     width: 15,
+            //                   ),
+            //                   SizedBox(
+            //                     width: 6,
+            //                   ),
+            //                   Text("Ouvrez maintenant",
+            //                       style: TextStyle(
+            //                           fontSize: 14, fontWeight: FontWeight.w500)),
+            //                 ],
+            //               ),
+            //               PopupMenuButton(
+            //                   icon: Container(
+            //                     height: 20,
+            //                     width: 20,
+            //                     decoration: BoxDecoration(
+            //                       borderRadius: BorderRadius.circular(50),
+            //                       border: Border.all(
+            //                         color: Colors.black,
+            //                       ),
+            //                     ),
+            //                     child: const Icon(
+            //                       Icons.arrow_downward_rounded,
+            //                       size: 15,
+            //                     ),
+            //                   ),
+            //                   onSelected: (String result) {
+            //                     // Handle the selected menu item
+            //                     print('Selected: $result');
+            //                   },
+            //                   itemBuilder: (BuildContext context) =>
+            //                       <PopupMenuEntry<String>>[
+            //                         const PopupMenuItem<String>(
+            //                             child: Text('item1'), value: 'item1'),
+            //                         const PopupMenuItem<String>(
+            //                           value: 'Item 2',
+            //                           child: Text('Item 2'),
+            //                         ),
+            //                         const PopupMenuItem<String>(
+            //                           value: 'Item 3',
+            //                           child: Text('Item 3'),
+            //                         ),
+            //                       ]),
+            //             ],
+            //           ),
+            //           Row(
+            //             mainAxisAlignment: MainAxisAlignment.center,
+            //             children: [
+            //               Text(
+            //                 '${widget.customRating.address}',
+            //                 style: TextStyle(
+            //                   color: Colors.grey,
+            //                 ),
+            //               ),
+            //             ],
+            //           )
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            //   const SizedBox(
+            //     height: 10,
+            //   ),
+            //   GestureDetector(
+            //     onTap: () {
+            //       showModalBottomSheet(
+            //         context: context,
+            //         isScrollControlled: true,
+            //         builder: (context) => BottomSheetContent(
+            //             bottomReview: BottomReview(
+            //                 title: 'Connectz',
+            //                 image: 'assets/Icons/profile.png',
+            //                 message: 'some thing some thing i dont know',
+            //                 time: '2 hours ago',
+            //                 messicon: 'assets/Icons/icon profilecrd.jpg',
+            //                 Rating: '4.5')),
+            //       );
+            //     },
+            //     child: Container(
+            //       height: 50,
+            //       width: MediaQuery.of(context).size.width * 0.9,
+            //       decoration: BoxDecoration(
+            //         border: Border.all(
+            //           color: Color.fromARGB(255, 227, 226, 226),
+            //           width: 1,
+            //         ),
+            //         boxShadow: const [
+            //           BoxShadow(
+            //             color: Colors.white,
+            //             blurRadius: 10,
+            //           ),
+            //         ],
+            //         borderRadius: BorderRadius.circular(10),
+            //       ),
+            //       child: const Padding(
+            //         padding: EdgeInsets.all(8.0),
+            //         child: SingleChildScrollView(
+            //           scrollDirection: Axis.horizontal,
+            //           child: Row(
+            //             children: [
+            //               Icon(
+            //                 Icons.message_rounded,
+            //                 color: Colors.blue,
+            //               ),
+            //               SizedBox(
+            //                 width: 4,
+            //               ),
+            //               Text(
+            //                 "connectz some thing some thing i dont know",
+            //                 style: TextStyle(fontSize: 14),
+            //               )
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            //   const SizedBox(
+            //     height: 20,
+            //   ),
+            //   Container(
+            //     width: MediaQuery.of(context).size.width * 0.9,
+            //     decoration: BoxDecoration(
+            //       border: Border.all(
+            //         color: Color.fromARGB(255, 227, 226, 226),
+            //         width: 1,
+            //       ),
+            //       boxShadow: const [
+            //         BoxShadow(
+            //           color: Colors.white,
+            //           blurRadius: 10,
+            //         ),
+            //       ],
+            //       borderRadius: BorderRadius.circular(10),
+            //     ),
+            //     child: Padding(
+            //       padding: const EdgeInsets.all(8.0),
+            //       child: Column(
+            //         mainAxisAlignment: MainAxisAlignment.start,
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           // Row(
+            //           //   children: [
+            //           //     CircleAvatar(
+            //           //       radius: 20,
+            //           //       backgroundImage: AssetImage(widget.bottomModel.image),
+            //           //     ),
+            //           //     const SizedBox(
+            //           //       width: 10,
+            //           //     ),
+            //           //     Column(
+            //           //       mainAxisAlignment: MainAxisAlignment.start,
+            //           //       crossAxisAlignment: CrossAxisAlignment.start,
+            //           //       children: [
+            //           //         Text(
+            //           //           widget.bottomModel.title,
+            //           //           style: TextStyle(fontSize: 20),
+            //           //         ),
+            //           //         Text(
+            //           //           widget.bottomModel.time,
+            //           //           style: TextStyle(fontSize: 14),
+            //           //         ),
+            //           //       ],
+            //           //     ),
+            //           //     const SizedBox(
+            //           //       width: 10,
+            //           //     ),
+            //           //   ],
+            //           // ),
+            //           // Text(
+            //           //   widget.bottomModel.message,
+            //           //   style: const TextStyle(
+            //           //     fontSize: 20,
+            //           //   ),
+            //           //   overflow: TextOverflow.ellipsis,
+            //           // ),
+            //           const Text('Overall',
+            //               style: TextStyle(fontWeight: FontWeight.bold)),
+            //           StarRating(
+            //             onRatingChanged: (rating) {
+            //               setState(() {
+            //                 _overallRating = rating;
+            //               });
+            //             },
+            //           ),
+            //           const SizedBox(height: 10),
+            //           const Text('Service',
+            //               style: TextStyle(fontWeight: FontWeight.bold)),
+            //           StarRating(
+            //             onRatingChanged: (rating) {
+            //               setState(() {
+            //                 _serviceRating = rating;
+            //               });
+            //             },
+            //           ),
+            //           SizedBox(height: 10),
+            //           const Text('Hospitality',
+            //               style: TextStyle(fontWeight: FontWeight.bold)),
+            //           StarRating(
+            //             onRatingChanged: (rating) {
+            //               setState(() {
+            //                 _hospitalityRating = rating;
+            //               });
+            //             },
+            //           ),
+            //           SizedBox(height: 10),
+            //           const Text('Pricing',
+            //               style: TextStyle(fontWeight: FontWeight.bold)),
+            //           StarRating(
+            //             onRatingChanged: (rating) {
+            //               setState(() {
+            //                 _pricingRating = rating;
+            //               });
+            //             },
+            //           ),
+            //           SizedBox(height: 10),
+            //           Row(
+            //             children: [
+            //               IconButton(
+            //                   onPressed: () {},
+            //                   icon: Icon(
+            //                     _isFavorite
+            //                         ? Icons.favorite
+            //                         : Icons.favorite_border,
+            //                     color: _isFavorite ? Colors.red : null,
+            //                   )),
+            //               IconButton(
+            //                   onPressed: () {},
+            //                   icon: Icon(Icons.messenger_outline_outlined)),
+            //             ],
+            //           )
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            //   const SizedBox(
+            //     height: 30,
+            //   ),
 
-          //   // Container(
-          //   //     height: 100,
-          //   //     width: MediaQuery.of(context).size.width * 0.9,
-          //   //     child: const Column(
-          //   //       children: [
-          //   //         Icon(
-          //   //           Icons.message_rounded,
-          //   //           size: 30,
-          //   //           color: Colors.grey,
-          //   //         ),
-          //   //         SizedBox(
-          //   //           height: 5,
-          //   //         ),
-          //   //         Text(
-          //   //           "connectz ",
-          //   //           style: TextStyle(fontSize: 14, color: Colors.grey),
-          //   //         )
-          //   //       ],
-          //   //     ))
+            //   // Container(
+            //   //     height: 100,
+            //   //     width: MediaQuery.of(context).size.width * 0.9,
+            //   //     child: const Column(
+            //   //       children: [
+            //   //         Icon(
+            //   //           Icons.message_rounded,
+            //   //           size: 30,
+            //   //           color: Colors.grey,
+            //   //         ),
+            //   //         SizedBox(
+            //   //           height: 5,
+            //   //         ),
+            //   //         Text(
+            //   //           "connectz ",
+            //   //           style: TextStyle(fontSize: 14, color: Colors.grey),
+            //   //         )
+            //   //       ],
+            //   //     ))
           ],
         ),
       ),

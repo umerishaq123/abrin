@@ -791,7 +791,7 @@ class _LISTCAState extends State<LISTCA> {
                                             socialMedia:
                                                 business.socialMedia,
                                             email: business.email,
-                                            id: business.id),
+                                            id: business.id, city: '${business.city}',),
                                         bottomModel: BottomModel(
                                             title: business.name,
                                             image: business.coverPicture,

@@ -2,16 +2,20 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:abrin_app_new/Bussinesses/AddNewBusiness/LoactionPikerscreen.dart';
+import 'package:abrin_app_new/Home/home_Screen.dart';
 import 'package:abrin_app_new/RetriveToken.dart';
 import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
+import 'package:abrin_app_new/componets/modelCategories.dart';
 import 'package:abrin_app_new/componets/widgets.dart';
+import 'package:abrin_app_new/utilis/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as https;
 import 'package:image_picker/image_picker.dart';
 
 class AddNewBusinessScreen extends StatefulWidget {
-  const AddNewBusinessScreen({super.key});
+  final List<Categorys> categories;
+  const AddNewBusinessScreen({required this.categories, super.key});
 
   @override
   State<AddNewBusinessScreen> createState() => _AddNewBusinessScreenState();
@@ -26,12 +30,14 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
   final TextEditingController websiteController = TextEditingController();
   final TextEditingController socialMediaController = TextEditingController();
   bool _isLoading = false;
-   String? selectedCity;
+  String? selectedCity;
   String? selectedLocation;
 
-  String selectedCategory = 'Select a category:';
-  final List<String> cities = ['Conakry',];
- 
+  String selectedCategory = 'Sélectionnez une catégorie :';
+  final List<String> cities = [
+    'Conakry',
+  ];
+
   final Map<String, List<String>> cityLocations = {
     'Conakry': [
       'Ratoma',
@@ -54,11 +60,11 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
     //   'bilalTown',
     //   'Mandian',
     //   'MalikPura',
-      
+
     // ],
   };
   final List<String> categories = [
-    'Select a category:',
+    'Sélectionnez une catégorie :',
     ' Restaurant , Café , Dessert',
     ' Entreprise événementielle',
     " Hotel , Motel , Résidence",
@@ -74,7 +80,7 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
     ' Institution financière',
     ' Sport , Gym',
     'Transport , Livraison',
-    ' Station essence'
+    ' Station essence',
         ' École , Université et Institut de formation',
     ' Média et actualité',
     ' Institution gouvernementale',
@@ -287,117 +293,126 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
   //   }
   // }
 
-
-
   Future<void> addBusiness() async {
-  if (nameController.text.isEmpty ||
-      selectedCategory == 'Select a category:' ||
-      descriptionController.text.isEmpty ||
-      selectedLocation == null ||
-      profilePicture == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Please fill in all required fields',
-          style: TextStyle(color: Colors.red),
-        ),
-      ),
-    );
-    return;
-  }
-
-  final token = await SessionHandlingViewModel().getToken();
-  if (token == null || token.isEmpty) {
-    setState(() {
-      _isLoading = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Error: Invalid token. Please login again.',
-          style: TextStyle(color: Colors.red),
-        ),
-      ),
-    );
-    return;
-  }
-
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    final url = Uri.parse('https://srv562456.hstgr.cloud/api/business/add');
-    final request = https.MultipartRequest('POST', url)
-      ..headers['Authorization'] = ' $token' // Use Bearer token prefix
-      ..fields['name'] = nameController.text
-      ..fields['category'] = selectedCategory
-      ..fields['description'] = descriptionController.text
-      ..fields['phone'] = phoneController.text
-      ..fields['email'] = emailController.text
-      ..fields['website'] = websiteController.text
-      ..fields['socialMedia'] = socialMediaController.text
-      ..fields['location'] = selectedLocation ?? ""
-      ..fields['city'] = selectedCity ?? "";
-
-    print('Location Data: ${request.fields['location']}');
-
-    if (profilePicture != null) {
-      request.files.add(await https.MultipartFile.fromPath(
-        'profilePicture',
-        profilePicture!.path,
-      ));
-    }
-
-    if (coverPicture != null) {
-      request.files.add(await https.MultipartFile.fromPath(
-        'coverPicture',
-        coverPicture!.path,
-      ));
-    }
-
-    for (var image in galleryImages) {
-      request.files.add(await https.MultipartFile.fromPath(
-        'gallery',
-        image.path,
-      ));
-    }
-
-    final response = await request.send();
-
-    if (response.statusCode == 200) {
-      print('Business Added Successfully');
+    print("::: the category is :$selectedCategory");
+    if (nameController.text.isEmpty ||
+        selectedCategory == 'Sélectionnez une catégorie :' ||
+        descriptionController.text.isEmpty ||
+        selectedLocation == null ||
+        profilePicture == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Business Added Successfully',
-            style: TextStyle(color: Colors.green),
+            'Please fill in all required fields',
+            style: TextStyle(color: Colors.red),
           ),
         ),
       );
-    } else {
-      final responseBody = await response.stream.bytesToString();
-      print('Failed to add business. Status code: ${response.statusCode}');
-      print('Response body: $responseBody');
-      throw Exception(
-          'Failed to add business. Status code: ${response.statusCode}');
+      return;
+    } else if (galleryImages.length < 5) {
+      Utils.toastMessage('Please select at least 5 photos.');
+      return;
     }
-  } catch (e) {
-    print('Error adding business: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Error adding business: Something went wrong ',
-          style: TextStyle(color: Colors.red),
+
+    final token = await SessionHandlingViewModel().getToken();
+    if (token == null || token.isEmpty) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Error: Invalid token. Please login again.',
+            style: TextStyle(color: Colors.red),
+          ),
         ),
-      ),
-    );
-  } finally {
+      );
+      return;
+    }
+
     setState(() {
-      _isLoading = false;
+      _isLoading = true;
     });
+
+    try {
+      final url = Uri.parse('https://srv562456.hstgr.cloud/api/business/add');
+      final request = https.MultipartRequest('POST', url)
+        ..headers['Authorization'] = ' $token' // Use Bearer token prefix
+        ..fields['name'] = nameController.text
+        ..fields['category'] = selectedCategory
+        ..fields['description'] = descriptionController.text
+        ..fields['phone'] = phoneController.text
+        ..fields['email'] = emailController.text
+        ..fields['website'] = websiteController.text
+        ..fields['socialMedia'] = socialMediaController.text
+        ..fields['location'] = selectedLocation ?? ""
+        ..fields['city'] = selectedCity ?? "";
+
+      print('Location Data: ${request.fields['location']}');
+
+      if (profilePicture != null) {
+        request.files.add(await https.MultipartFile.fromPath(
+          'profilePicture',
+          profilePicture!.path,
+        ));
+      }
+
+      if (coverPicture != null) {
+        request.files.add(await https.MultipartFile.fromPath(
+          'coverPicture',
+          coverPicture!.path,
+        ));
+      }
+
+      for (var image in galleryImages) {
+        request.files.add(await https.MultipartFile.fromPath(
+          'gallery',
+          image.path,
+        ));
+      }
+
+      final response = await request.send();
+
+      if (response.statusCode == 200) {
+        print('Business Added Successfully');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Entreprise ajoutée avec succès',
+              style: TextStyle(color: Colors.green),
+            ),
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                HomeScreen(categories: widget.categories,), // Replace with your Signup screen widget
+          ),
+        );
+      } else {
+        final responseBody = await response.stream.bytesToString();
+        print('Failed to add business. Status code: ${response.statusCode}');
+        print('Response body: $responseBody');
+        throw Exception(
+            'Failed to add business. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error adding business: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Erreur lors de l'ajout d'une entreprise : un problème s'est produit",
+            style: TextStyle(color: Colors.red),
+          ),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -446,7 +461,7 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
                 CustomTextField(
                   obscureText: false,
                   controller: nameController,
-                  labelText: 'Name:',
+                  labelText: 'Nom',
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
@@ -463,7 +478,8 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
                     });
                   },
                   decoration: InputDecoration(
-                    labelText: 'Category:',
+                    labelText: 'Catégorie',
+
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -502,7 +518,46 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
                 // ),
 
                 const SizedBox(height: 16),
-             g
+                DropdownButtonFormField<String>(
+                  value: selectedCity,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCity = value;
+                      selectedLocation = null; // Reset location on city change
+                    });
+                  },
+                  items: cities.map((city) {
+                    return DropdownMenuItem<String>(
+                      value: city,
+                      child: Text(city),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    labelText: 'Ville',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: selectedLocation,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedLocation = value;
+                    });
+                  },
+                  items: selectedCity != null
+                      ? cityLocations[selectedCity!]!
+                          .map((location) => DropdownMenuItem<String>(
+                                value: location,
+                                child: Text(location),
+                              ))
+                          .toList()
+                      : [],
+                  decoration: InputDecoration(
+                    labelText: 'Emplacement',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
                 // CustomTextField(
                 //   obscureText: false,
                 //   controller: addressController,

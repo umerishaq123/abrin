@@ -1,6 +1,6 @@
-
 import 'package:abrin_app_new/aouth/Handlers/aouthProviderSignup.dart';
 import 'package:abrin_app_new/aouth/login.dart';
+import 'package:abrin_app_new/utilis/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,15 +30,22 @@ class _SignupPageState extends State<SignupPage> {
     final String email = _emailController.text;
     final String password = _passwordController.text;
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please fill all the fields'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+    // if (name.isEmpty || email.isEmpty || password.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text('Please fill all the fields'),
+    //       backgroundColor: Colors.red,
+    //     ),
+    //   );
+    //   return;
+    // }
+    if (name.isEmpty) {
+      Utils.snackBar('Veuillez entrer un nom', context);
+    } else if (email.isEmpty) {
+      Utils.snackBar('Veuillez entrer un email', context);
+    } else if(password.isEmpty) {
+      Utils.snackBar('Veuillez entrer un mot de passe', context);
+    } 
     if (!_isAgreeChecked) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -67,7 +74,7 @@ class _SignupPageState extends State<SignupPage> {
       print('Signup failed: $error');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Signup failed. Please try again.'),
+          content: Text('Échec de l inscription. L utilisateur existe déjà'),
           backgroundColor: Colors.red,
         ),
       );
@@ -83,7 +90,7 @@ class _SignupPageState extends State<SignupPage> {
 
     if (otp.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter the OTP')),
+        SnackBar(content: Text("Veuillez saisir l'OTP"),),
       );
       return;
     }
@@ -98,6 +105,13 @@ class _SignupPageState extends State<SignupPage> {
           'OTP verified successfully for phone: ${Provider.of<AuthProvider>(context, listen: false).email}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('OTP verified successfully')),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              LoginPage(), // Replace with your Signup screen widget
+        ),
       );
       // Navigate to login or home page
     } catch (error) {
@@ -122,12 +136,12 @@ class _SignupPageState extends State<SignupPage> {
       print(
           'OTP resent successfully for phone: ${Provider.of<AuthProvider>(context, listen: false).email}');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('OTP resent successfully')),
+        SnackBar(content: Text('OTP renvoyé avec succès')),
       );
     } catch (error) {
       print('Failed to resend OTP: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to resend OTP. Please try again.')),
+        SnackBar(content: Text("Échec du renvoi d'OTP. Veuillez réessayer. ")),
       );
     } finally {
       setState(() {
@@ -139,6 +153,13 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.arrow_back)),
+      ),
       backgroundColor: Color(0xFFF5F5F5),
       body: Center(
         child: Padding(
@@ -148,7 +169,7 @@ class _SignupPageState extends State<SignupPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Welcome',
+                  ' Bienvenue ',
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
@@ -159,7 +180,7 @@ class _SignupPageState extends State<SignupPage> {
                 TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(
-                    labelText: 'Name',
+                    labelText: 'Nom',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -171,7 +192,7 @@ class _SignupPageState extends State<SignupPage> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     hintText: "example@gmail.com",
-                    labelText: 'Email',
+                    labelText: 'E-mail',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -182,7 +203,7 @@ class _SignupPageState extends State<SignupPage> {
                   controller: _passwordController,
                   obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: 'Mot de passe',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -209,7 +230,7 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     Expanded(
                       child: Text(
-                        'I agree to the terms and conditions',
+                        'J’accepte les termes et conditions.',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -222,7 +243,7 @@ class _SignupPageState extends State<SignupPage> {
                       TextFormField(
                         controller: _otpController,
                         decoration: InputDecoration(
-                          labelText: 'Enter OTP',
+                          labelText: 'Entrez OTP',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
@@ -233,11 +254,11 @@ class _SignupPageState extends State<SignupPage> {
                           ? CircularProgressIndicator()
                           : ElevatedButton(
                               onPressed: _verifyOtp,
-                              child: Text('Verify OTP'),
+                              child: Text('Vérifier OTP'),
                             ),
                       TextButton(
                         onPressed: _resendOtp,
-                        child: Text('Resend OTP'),
+                        child: Text('Renvoyer OTP'),
                       ),
                     ],
                   )
@@ -252,7 +273,7 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           onPressed: _isAgreeChecked ? _signup : null,
                           child: Text(
-                            'Create Account',
+                            'Créer un compte',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.w600),
                           ),
@@ -262,7 +283,7 @@ class _SignupPageState extends State<SignupPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Already have a account?",
+                      "Vous avez déjà un compte ?",
                       style: TextStyle(
                         color: Colors.black54,
                         fontSize: 16,
@@ -276,7 +297,7 @@ class _SignupPageState extends State<SignupPage> {
                         );
                       },
                       child: Text(
-                        "Login",
+                        "Se connecter ",
                         style: TextStyle(
                           color: Color(0xFF6495ED),
                           fontSize: 18,

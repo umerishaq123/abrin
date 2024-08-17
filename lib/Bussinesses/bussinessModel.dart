@@ -116,6 +116,7 @@ class Business {
   DateTime? updatedAt;
   int? v;
    String? email;
+   String? city;
 
   Business({
     required this.id,
@@ -139,6 +140,7 @@ class Business {
     this.createdAt,
     this.updatedAt,
     this.v,this.email,
+    this.city,
   });
 
   factory Business.fromJson(Map<String, dynamic> json) => Business(
@@ -175,7 +177,8 @@ class Business {
             ? null
             : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
-         email: json["email"],
+         email: json["email"]??'',
+            city: json["city"]??'',
       );
 
   Map<String, dynamic> toJson() => {
@@ -207,5 +210,6 @@ class Business {
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
          "email": email,
+         "city": city,
       };
 }

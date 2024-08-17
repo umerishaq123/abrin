@@ -10,11 +10,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Localbusinnescategores extends StatefulWidget {
   final Business businescategory;
-  final LatLng latLng;
+  // final LatLng latLng;
 
   const Localbusinnescategores({
     required this.businescategory,
-    required this.latLng,
+    // required this.latLng,
   });
 
   @override
@@ -32,7 +32,7 @@ class _LocalbusinnescategoresState extends State<Localbusinnescategores> {
           widget.businescategory.profilePicture,
           width: 80,
           height: 100,
-          fit: BoxFit.fill,
+          fit:BoxFit.cover,
         ),
       ),
       title: SingleChildScrollView(
@@ -77,7 +77,7 @@ class _LocalbusinnescategoresState extends State<Localbusinnescategores> {
                     phone: bussinusdetail.phone,
                     website: bussinusdetail.website,
                     socialMedia: bussinusdetail.socialMedia,
-                    id: bussinusdetail.socialMedia, email: bussinusdetail.email,),
+                    id: bussinusdetail.socialMedia, email: bussinusdetail.email, city: '${bussinusdetail.city}',),
                 bottomModel: BottomModel(
                     title: bussinusdetail.name,
                     image: bussinusdetail.coverPicture,

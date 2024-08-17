@@ -21,19 +21,20 @@ class _SplasScreenState extends State<SplasScreen> {
     // Delay navigation by 3 seconds
     Future.delayed(Duration(seconds: 3), () async {
       // Navigate to your desired screen
-      final token = await SessionHandlingViewModel().getToken();
-      print("::: the token in splash is :$token");
-      if (token != null) {
+      // final token = await SessionHandlingViewModel().getToken();
+      // print("::: the token in splash is :$token");
+      // if (token != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen(categories: categories,)),
         );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        );
-      }
+      // // }
+      // else {
+      //   Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => LoginPage()),
+      //   );
+      
     });
   }
 

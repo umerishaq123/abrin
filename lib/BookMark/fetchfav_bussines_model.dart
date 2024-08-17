@@ -30,6 +30,7 @@ class FetchFavruitBussineses {
     DateTime createdAt;
     DateTime updatedAt;
       String email;
+       String city;
 
     FetchFavruitBussineses({
         required this.id,
@@ -52,7 +53,8 @@ class FetchFavruitBussineses {
         required this.pendingModifications,
         required this.createdAt,
         required this.updatedAt,
-        required this.email
+        required this.email,
+        required this.city
     });
 
     factory FetchFavruitBussineses.fromJson(Map<String, dynamic> json) => FetchFavruitBussineses(
@@ -77,6 +79,7 @@ class FetchFavruitBussineses {
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
            email: json["email"],
+           city: json["city"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -101,5 +104,6 @@ class FetchFavruitBussineses {
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
          "email": email,
+         "city": city,
     };
 }

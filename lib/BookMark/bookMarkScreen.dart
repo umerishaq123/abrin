@@ -73,6 +73,7 @@ import 'package:abrin_app_new/Home/ReviewBusiness/ReviewScreen.dart';
 import 'package:abrin_app_new/Home/business/customRatings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:readmore/readmore.dart';
 
 class BookmarkedScreen extends StatefulWidget {
   @override
@@ -92,6 +93,9 @@ class _BookmarkedScreenState extends State<BookmarkedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -125,18 +129,20 @@ class _BookmarkedScreenState extends State<BookmarkedScreen> {
                     MaterialPageRoute(
                       builder: (context) => ReviewsScreen(
                         customRating: CustomRating(
-                            coverPicture: business.coverPicture,
-                            type: business.category,
-                            name: business.name,
-                            address: business.location,
-                            description: business.description,
-                            profilePicture: business.profilePicture,
-                            isVerified: business.isVerified,
-                            phone: business.phone,
-                            website: business.website,
-                            socialMedia: business.socialMedia,
-                            email: business.email,
-                            id: business.id),
+                          coverPicture: business.coverPicture,
+                          type: business.category,
+                          name: business.name,
+                          address: business.location,
+                          description: business.description,
+                          profilePicture: business.profilePicture,
+                          isVerified: business.isVerified,
+                          phone: business.phone,
+                          website: business.website,
+                          socialMedia: business.socialMedia,
+                          email: business.email,
+                          id: business.id,
+                          city: business.city,
+                        ),
                         bottomModel: BottomModel(
                             title: business.name,
                             image: business.coverPicture,
@@ -147,15 +153,32 @@ class _BookmarkedScreenState extends State<BookmarkedScreen> {
                     ),
                   );
                 },
-                leading: Image.network(
-                  business.profilePicture,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Icon(Icons
-                        .error); // Display an error icon if the image fails to load
-                  },
+                leading: Container(
+                  height: height * 0.1,
+                  child: Image.network(
+                    business.profilePicture,
+                    width: 80,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
                 ),
+                //  Image.network(
+                //   business.profilePicture,
+                //   errorBuilder: (context, error, stackTrace) {
+                //     return Icon(Icons
+                //         .error); // Display an error icon if the image fails to load
+                //   },
+                // ),
                 title: Text(business.name), // Display the business name
-                subtitle: Text(business.description ?? 'No description'),
+                subtitle: Text(
+                  business.description,
+                  overflow:
+                      TextOverflow.ellipsis, // Truncate text with ellipsis
+                  maxLines: 1, // Limit to one line
+                  style: TextStyle(
+                    color: Colors.grey, // Optional: Adjust text color or style
+                  ),
+                ),
                 trailing: IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () {
