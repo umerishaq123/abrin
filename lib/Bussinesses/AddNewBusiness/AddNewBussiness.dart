@@ -295,21 +295,38 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
 
   Future<void> addBusiness() async {
     print("::: the category is :$selectedCategory");
-    if (nameController.text.isEmpty ||
-        selectedCategory == 'Sélectionnez une catégorie :' ||
-        descriptionController.text.isEmpty ||
-        selectedLocation == null ||
-        profilePicture == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please fill in all required fields',
-            style: TextStyle(color: Colors.red),
-          ),
-        ),
-      );
-      return;
-    } else if (galleryImages.length < 5) {
+    // if (nameController.text.isEmpty ||
+    //     selectedCategory == 'Sélectionnez une catégorie :' ||
+    //     descriptionController.text.isEmpty ||
+    //     selectedLocation == null ||
+    //     profilePicture == null) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text(
+    //         'Please fill in all required fields',
+    //         style: TextStyle(color: Colors.red),
+    //       ),
+    //     ),
+    //   );
+    //   return;
+    // } 
+    if(nameController.text.isEmpty){
+      Utils.snackBar('Veuillez entrer le nom', context);
+    }else if(selectedCategory.isEmpty){
+      Utils.snackBar('Veuillez sélectionner une catégorie', context);
+    }else if(selectedCity==null){
+      Utils.snackBar('Veuillez sélectionner une ville', context);
+    }else if(selectedLocation==null){
+      Utils.snackBar("Veuillez entrer un emplacement", context);
+
+    }
+    else if(descriptionController.text.isEmpty){
+      Utils.snackBar("Veuillez saisir une description", context);
+
+    }else if(phoneController.text.isEmpty){
+      Utils.snackBar('Veuillez entrer un numéro de téléphone', context);
+    }
+    else if (galleryImages.length < 5) {
       Utils.toastMessage('Please select at least 5 photos.');
       return;
     }
@@ -461,7 +478,8 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
                 CustomTextField(
                   obscureText: false,
                   controller: nameController,
-                  labelText: 'Nom',
+                  labelText: 'Nom:',
+                  required: true,
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
@@ -478,7 +496,7 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
                     });
                   },
                   decoration: InputDecoration(
-                    labelText: 'Catégorie',
+                    labelText: 'Catégorie: *',
 
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -533,7 +551,7 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
                     );
                   }).toList(),
                   decoration: InputDecoration(
-                    labelText: 'Ville',
+                    labelText: 'Ville:*',
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -554,7 +572,7 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
                           .toList()
                       : [],
                   decoration: InputDecoration(
-                    labelText: 'Emplacement',
+                    labelText: 'Emplacement:*',
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -582,6 +600,7 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
                   obscureText: false,
                   controller: descriptionController,
                   labelText: 'Description:',
+                  required: true,
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
@@ -590,6 +609,7 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
                   labelText: 'Phone:',
                   keyboardType: TextInputType.phone,
                   maxLength: 11,
+                  required: true,
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(

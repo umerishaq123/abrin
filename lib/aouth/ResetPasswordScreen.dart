@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:abrin_app_new/aouth/update_password.dart';
+import 'package:abrin_app_new/utilis/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 
@@ -9,7 +11,7 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _newPasswordController = TextEditingController();
+  // final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
@@ -23,26 +25,32 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   Future<void> _resetPassword() async {
     final String email = _emailController.text;
-    final String newPassword = _newPasswordController.text;
+    // final String newPassword = _newPasswordController.text;
 
-    if (email.isEmpty || newPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all the fields')),
-      );
-      return;
+    // if (email.isEmpty || newPassword.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Please fill all the fields')),
+    //   );
+    //   return;
+    // }
+    if(email.isEmpty){
+      Utils.snackBar("Veuillez entrer un email", context);
     }
+    // else if(newPassword.isEmpty){
+    //   Utils.snackBar("Veuillez entrer un mot de passe", context);
+    // }
 
     setState(() {
       _isLoading = true;
     });
 
-    final url = Uri.parse('https://srv562456.hstgr.cloud/api/auth/reset-password');
+    final url = Uri.parse('https://srv562456.hstgr.cloud/api/auth/forgot-password');
     final headers = {
       'Content-Type': 'application/json',
     };
     final body = json.encode({
       'email': email,
-      'password': newPassword,
+     
     });
 
     print('Reset Password URL: $url');
@@ -63,12 +71,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         setState(() {
           _isOtpSent = true;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('OTP sent to your phone number')),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('OTP sent to your phone number')),
+        // );
+        Utils.snackBar('OTP envoyé à votre numéro de téléphone', context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send OTP: ${response.reasonPhrase}')),
+          SnackBar(content: Text("Échec de l'envoi d'OTP : ${response.reasonPhrase}")),
         );
       }
     } catch (e) {
@@ -78,7 +87,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
       print('Reset Password Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to send OTP: $e')),
+        SnackBar(content: Text("Échec de l'envoi d'OTP : $e")),
       );
     }
   }
@@ -97,7 +106,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       _isLoading = true;
     });
 
-    final url = Uri.parse('https://srv562456.hstgr.cloud/api/auth/verify-reset-otp');
+    final url = Uri.parse('https://srv562456.hstgr.cloud/api/auth/verify-otp');
     final headers = {
       'Content-Type': 'application/json',
     };
@@ -122,12 +131,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Password reset successfully')),
+          SnackBar(content: Text('OTP vérifie avec succès')),
         );
-        Navigator.pop(context);
+         Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateNewPassword(),
+                      ),
+                    );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to verify OTP: ${response.reasonPhrase}')),
+          SnackBar(content: Text("Échec de la vérification d'OTP: ${response.reasonPhrase} ")),
         );
       }
     } catch (e) {
@@ -137,7 +151,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
       print('Verify OTP Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to verify OTP: $e')),
+        SnackBar(content: Text("Échec de la vérification d'OTP: $e")),
       );
     }
   }
@@ -146,7 +160,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reset Password'),
+        title: Text('Réinitialiser le mot de passe'),
       ),
       body: Center(
         child: Padding(
@@ -165,32 +179,32 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                 ),
                 SizedBox(height: 16),
-                TextFormField(
-                  controller: _newPasswordController,
-                  obscureText: !_isPasswordVisible,
-                  decoration: InputDecoration(
-                    labelText: 'New Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: _togglePasswordVisibility,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 24),
+                // TextFormField(
+                //   controller: _newPasswordController,
+                //   obscureText: !_isPasswordVisible,
+                //   decoration: InputDecoration(
+                //     labelText: 'New Password',
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(15),
+                //     ),
+                //     suffixIcon: IconButton(
+                //       icon: Icon(
+                //         _isPasswordVisible
+                //             ? Icons.visibility
+                //             : Icons.visibility_off,
+                //       ),
+                //       onPressed: _togglePasswordVisibility,
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(height: 24),
                 _isOtpSent
                     ? Column(
                         children: [
                           TextFormField(
                             controller: _otpController,
                             decoration: InputDecoration(
-                              labelText: 'Enter OTP',
+                              labelText: 'Entrez OTP',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
@@ -201,7 +215,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               ? CircularProgressIndicator()
                               : ElevatedButton(
                                   onPressed: _verifyOtp,
-                                  child: Text('Verify OTP'),
+                                  child: Text('Vérifier OTP'),
                                 ),
                         ],
                       )
@@ -209,7 +223,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         ? CircularProgressIndicator()
                         : ElevatedButton(
                             onPressed: _resetPassword,
-                            child: Text('Reset Password'),
+                            child: Text('Envoyer OTP par e-mail'),
                           ),
               ],
             ),

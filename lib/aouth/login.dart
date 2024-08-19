@@ -96,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setString('email', userEmail);
 
         print('Login successful, token: $token');
+        Utils.toastMessage('Connexion réussie');
 
         Navigator.pushReplacement(
           context,
@@ -107,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed')),
+          SnackBar(content: Text('La connexion a échoué')),
         );
       }
     } catch (e) {
@@ -117,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
 
       print('Login Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: $e')),
+        SnackBar(content: Text('La connexion a échoué: $e')),
       );
     }
   }

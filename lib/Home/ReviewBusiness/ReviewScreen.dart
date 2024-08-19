@@ -124,7 +124,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     final List<Category> categories = [
       Category(
         icon: Icons.directions,
-        label: widget.customRating.city+"/"+widget.customRating.address,
+        label: widget.customRating.city + "/" + widget.customRating.address,
         onTap: () {
           // launcher.launchUrl(
           //   Uri.parse('https://www.google.com/'),
@@ -162,7 +162,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               print('Error launching URL: $e');
             }
           } else {
-          Utils.toastMessage('invalid phoneNumber/null phoneNumber');
+            Utils.toastMessage('invalid phoneNumber/null phoneNumber');
           }
         },
       ),
@@ -232,16 +232,17 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               _isFavorite = !_isFavorite;
             });
           } else {
-            Utils.snackBar("s'il vous plaît, inscrivez-vous d'abord !", context);
-           Future.delayed(Duration(seconds: 3), () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SignupPage(), // Replace with your Signup screen widget
-      ),
-    );
-  }
-  );
+            Utils.snackBar(
+                "s'il vous plaît, inscrivez-vous d'abord !", context);
+            Future.delayed(Duration(seconds: 3), () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      SignupPage(), // Replace with your Signup screen widget
+                ),
+              );
+            });
           }
 
           //bookmarkBusiness();
@@ -473,7 +474,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                   ),
                                   child: Center(
                                     child: SingleChildScrollView(
-                                       scrollDirection: Axis.horizontal,
+                                      scrollDirection: Axis.horizontal,
                                       child: Row(
                                         children: [
                                           Icon(
@@ -644,14 +645,13 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         height: 6,
                       ),
                       ReadMoreText(
-                         widget.customRating.description,
-                                  trimCollapsedText: 'show more',
-                                  trimExpandedText: 'show less',
-                                  trimLines: 2,
-                                  trimMode: TrimMode.Line,
-                                  trimLength: 240,
-                                  
-                                  colorClickableText: Colors.grey,
+                        widget.customRating.description,
+                        trimCollapsedText: 'show more',
+                        trimExpandedText: 'show less',
+                        trimLines: 2,
+                        trimMode: TrimMode.Line,
+                        trimLength: 240,
+                        colorClickableText: Colors.grey,
                       )
                       // Text(
                       //   widget.customRating.description,
@@ -738,19 +738,18 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                                           const SizedBox(width: 5),
                                           Flexible(
                                             child: ReadMoreText(
-                                               widget.customRating.type,
-                                                                                trimCollapsedText: 'show more',
-                                                                                trimExpandedText: 'show less',
-                                                                                trimLines: 2,
-                                                                                trimMode: TrimMode.Line,
-                                                                                trimLength: 240,
-                                                                                
-                                                                                colorClickableText: Colors.grey,
+                                              widget.customRating.type,
+                                              trimCollapsedText: 'show more',
+                                              trimExpandedText: 'show less',
+                                              trimLines: 2,
+                                              trimMode: TrimMode.Line,
+                                              trimLength: 240,
+                                              colorClickableText: Colors.grey,
                                             ),
                                           )
                                           // Text(
                                           //   ReadMoreText(
-                                              
+
                                           //   ),
                                           //   style: const TextStyle(
                                           //     color: Colors.grey,

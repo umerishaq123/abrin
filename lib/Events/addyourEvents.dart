@@ -1,12 +1,12 @@
 import 'dart:io';
 
-
 import 'package:abrin_app_new/Bussinesses/AddNewBusiness/LoactionPikerscreen.dart';
 import 'package:abrin_app_new/Events/ApiHandlerForEvents.dart';
 import 'package:abrin_app_new/Events/addeventsmodel.dart';
 import 'package:abrin_app_new/RetriveToken.dart';
 import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
 import 'package:abrin_app_new/componets/widgets.dart';
+import 'package:abrin_app_new/utilis/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -28,12 +28,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final TextEditingController _timeController = TextEditingController();
   File? _image;
   Position? location;
-    String? selectedCity;
+  String? selectedCity;
   String? selectedLocation;
 
   String selectedCategory = 'Select a category:';
-  final List<String> cities = ['Conakry',];
- 
+  final List<String> cities = [
+    'Conakry',
+  ];
+
   final Map<String, List<String>> cityLocations = {
     'Conakry': [
       'Ratoma',
@@ -56,7 +58,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
     //   'bilalTown',
     //   'Mandian',
     //   'MalikPura',
-      
+
     // ],
   };
 
@@ -67,7 +69,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
-        
       });
     }
   }
@@ -145,84 +146,98 @@ class _AddEventScreenState extends State<AddEventScreen> {
   // }
 
   Future<void> addEvent() async {
-    if (_nameController.text.isNotEmpty &&
-        _descriptionController.text.isNotEmpty &&
-        _dateController.text.isNotEmpty &&
-        _timeController.text.isNotEmpty &&
-         selectedLocation!=null &&
-        _image != null) {
+    // if (_nameController.text.isNotEmpty &&
+    //     _descriptionController.text.isNotEmpty &&
+    //     _dateController.text.isNotEmpty &&
+    //     _timeController.text.isNotEmpty &&
+    //      selectedLocation!=null &&
+    //     _image != null) {
+    if (_nameController.text.isEmpty) {
+      Utils.snackBar("Veuillez entrer un nom", context);
+    } else if (_descriptionController.text.isEmpty) {
+      Utils.snackBar("Veuillez saisir une description", context);
+    } else if (_dateController.text.isEmpty) {
+      Utils.snackBar("Veuillez entrer une date", context);
+    } else if (_timeController.text.isEmpty) {
+      Utils.snackBar("Veuillez entrer l'heure de l'événement", context);
+    } else if (selectedLocation == null) {
+      Utils.snackBar("Veuillez entrer un lieu d'événement", context);
+    } else if (_image == null) {
+      Utils.snackBar("Veuillez entrer une image", context);
+    }
+
+    setState(() {
+      _isLoading = true; // Start loading
+    });
+
+    final token = await SessionHandlingViewModel().getToken();
+    if (token == null || token.isEmpty) {
       setState(() {
-        _isLoading = true; // Start loading
+        _isLoading = false; // Stop loading if token is invalid
       });
-
-      final token = await SessionHandlingViewModel().getToken();
-      if (token == null || token.isEmpty) {
-        setState(() {
-          _isLoading = false; // Stop loading if token is invalid
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Error: Invalid token. Please login again.',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        );
-        return;
-      }
-
-      final event = Event(
-        id: '',
-        image: _image!.path,
-        description: _descriptionController.text,
-        name: _nameController.text,
-        location: '$selectedLocation',
-        date: _dateController.text,
-        time: _timeController.text,
-      );
-
-      try {
-        final response = await apiService.addEvent(token, event);
-
-        if (response.statusCode == 200) {
-          Navigator.pop(context);
-          print('Event added successfully');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Event added successfully!',
-                style: TextStyle(color: Colors.green),
-              ),
-            ),
-          );
-        } else {
-          throw Exception('Failed to add event: ${response.body}');
-        }
-      } catch (error) {
-        print('Failed to add event: $error');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to add event: $error',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        );
-      } finally {
-        setState(() {
-          _isLoading = false; // Stop loading when request is completed
-        });
-      }
-    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Please fill all fields and select an image.',
+            'Error: Invalid token. Please login again.',
             style: TextStyle(color: Colors.red),
           ),
         ),
       );
+      return;
     }
+
+    final event = Event(
+      id: '',
+      image: _image!.path,
+      description: _descriptionController.text,
+      name: _nameController.text,
+      location: '$selectedLocation',
+      date: _dateController.text,
+      time: _timeController.text,
+    );
+
+    try {
+      final response = await apiService.addEvent(token, event);
+
+      if (response.statusCode == 200) {
+        Navigator.pop(context);
+        print('Event added successfully');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Event added successfully!',
+              style: TextStyle(color: Colors.green),
+            ),
+          ),
+        );
+      } else {
+        throw Exception('Failed to add event: ${response.body}');
+      }
+    } catch (error) {
+      print('Failed to add event: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to add event: $error',
+            style: TextStyle(color: Colors.red),
+          ),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false; // Stop loading when request is completed
+      });
+    }
+    // } else {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text(
+    //         'Please fill all fields and select an image.',
+    //         style: TextStyle(color: Colors.red),
+    //       ),
+    //     ),
+    //   );
+    // }
   }
 
   @override
@@ -266,7 +281,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  "Enter Name:",
+                  "Entrez le nom :",
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.black,
@@ -279,14 +294,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
             CustomTextField(
               obscureText: false,
               controller: _nameController,
-              labelText: 'Name:',
+              labelText: 'Nom:',
+              required: true,
             ),
             SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  "Add some description",
+                  "Ajouter une description",
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.black,
@@ -300,13 +316,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
               obscureText: false,
               controller: _descriptionController,
               labelText: 'Description:',
+              required: true,
             ),
             SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  "Select date for event",
+                  "Sélectionnez la date de l'événement",
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.black,
@@ -324,13 +341,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 icon: Icon(Icons.calendar_today, color: Colors.blue),
                 onPressed: _pickDate,
               ),
+              required: true,
             ),
             SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  "Select time for event",
+                  "Sélectionnez l'heure de l'événement",
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.black,
@@ -343,18 +361,19 @@ class _AddEventScreenState extends State<AddEventScreen> {
             CustomTextField(
               obscureText: false,
               controller: _timeController,
-              labelText: 'Time:',
+              labelText: 'Temps:',
               suffixIcon: IconButton(
                 icon: Icon(Icons.access_time, color: Colors.blue),
                 onPressed: _pickTime,
               ),
+              required: true,
             ),
             SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  "Select address of event",
+                  "Sélectionnez l'adresse de l'événement",
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.black,
@@ -388,47 +407,47 @@ class _AddEventScreenState extends State<AddEventScreen> {
             //     },
             //   ),
             // ),
-            SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: selectedCity,
-                onChanged: (value) {
-                  setState(() {
-                    selectedCity = value;
-                    selectedLocation = null; // Reset location on city change
-                  });
-                },
-                items: cities.map((city) {
-                  return DropdownMenuItem<String>(
-                    value: city,
-                    child: Text(city),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  labelText: 'City',
-                  border: OutlineInputBorder(),
-                ),
+            SizedBox(height: 3),
+            DropdownButtonFormField<String>(
+              value: selectedCity,
+              onChanged: (value) {
+                setState(() {
+                  selectedCity = value;
+                  selectedLocation = null; // Reset location on city change
+                });
+              },
+              items: cities.map((city) {
+                return DropdownMenuItem<String>(
+                  value: city,
+                  child: Text(city),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                labelText: 'Ville*',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedLocation,
-                onChanged: (value) {
-                  setState(() {
-                    selectedLocation = value;
-                  });
-                },
-                items: selectedCity != null
-                    ? cityLocations[selectedCity!]!
-                        .map((location) => DropdownMenuItem<String>(
-                              value: location,
-                              child: Text(location),
-                            ))
-                        .toList()
-                    : [],
-                decoration: InputDecoration(
-                  labelText: 'Location',
-                  border: OutlineInputBorder(),
-                ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: selectedLocation,
+              onChanged: (value) {
+                setState(() {
+                  selectedLocation = value;
+                });
+              },
+              items: selectedCity != null
+                  ? cityLocations[selectedCity!]!
+                      .map((location) => DropdownMenuItem<String>(
+                            value: location,
+                            child: Text(location),
+                          ))
+                      .toList()
+                  : [],
+              decoration: InputDecoration(
+                labelText: 'Emplacement*',
+                border: OutlineInputBorder(),
               ),
+            ),
             _isLoading
                 ? Center(child: CircularProgressIndicator())
                 : ElevatedButton(

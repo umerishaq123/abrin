@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -9,14 +8,16 @@ class CustomTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final Widget? suffixIcon;
   final int? maxLength; // Making it optional
+  final bool required; // New field to indicate if the field is required
 
   CustomTextField({
     required this.controller,
     required this.labelText,
-    this.obscureText = true,
+    this.obscureText = false, // Default value changed to false
     this.keyboardType,
     this.suffixIcon,
     this.maxLength,
+    this.required = false, // Default value changed to false
   });
 
   @override
@@ -29,7 +30,7 @@ class CustomTextField extends StatelessWidget {
           ? [LengthLimitingTextInputFormatter(maxLength)]
           : null,
       decoration: InputDecoration(
-        labelText: labelText,
+        labelText: required ? '$labelText *' : labelText, // Show * if required
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -38,7 +39,6 @@ class CustomTextField extends StatelessWidget {
     );
   }
 }
-
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
