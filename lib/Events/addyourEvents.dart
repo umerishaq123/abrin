@@ -9,7 +9,7 @@ import 'package:abrin_app_new/componets/widgets.dart';
 import 'package:abrin_app_new/utilis/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:image_picker/image_picker.dart';
 
 class AddEventScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   File? _image;
-  Position? location;
+  // Position? location;
   String? selectedCity;
   String? selectedLocation;
 

@@ -663,6 +663,9 @@ class _LISTCAState extends State<LISTCA> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(leading: IconButton(onPressed: (){
+        Navigator.pop(context);
+      }, icon: Icon(Icons.arrow_back)),),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(

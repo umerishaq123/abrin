@@ -8,7 +8,7 @@
 
 
     <application
-        android:label="abrin_app_new"
+        android:label="Abirin"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">

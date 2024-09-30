@@ -98,7 +98,7 @@ class _AddNewBusinessScreenState extends State<AddNewBusinessScreen> {
   XFile? profilePicture;
   XFile? coverPicture;
   List<XFile> galleryImages = [];
-  Position? location;
+  // Position? location;
 
   Future<void> pickProfilePicture() async {
     try {

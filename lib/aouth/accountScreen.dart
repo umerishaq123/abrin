@@ -135,7 +135,7 @@ class _AccountScreenState extends State<AccountScreen> {
     // await prefs.remove('profile_pic_path');
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => LoginPage(islogin: true,)),
     );
   }
 

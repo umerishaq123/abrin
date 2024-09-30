@@ -110,7 +110,7 @@ class _SignupPageState extends State<SignupPage> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              LoginPage(), // Replace with your Signup screen widget
+              LoginPage(islogin: true,), // Replace with your Signup screen widget
         ),
       );
       // Navigate to login or home page
@@ -293,7 +293,7 @@ class _SignupPageState extends State<SignupPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(builder: (context) => LoginPage(islogin: true,)),
                         );
                       },
                       child: Text(

@@ -10,7 +10,7 @@ import 'package:abrin_app_new/aouth/component/session_handling_provider.dart';
 import 'package:abrin_app_new/componets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:image_picker/image_picker.dart';
 
 class EditEventScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   File? _image;
-  Position? location;
+  // Position? location;
 
   @override
   void initState() {
@@ -85,46 +85,46 @@ class _EditEventScreenState extends State<EditEventScreen> {
     }
   }
 
-  Future<void> pickLocation() async {
-    try {
-      bool serviceEnabled;
-      LocationPermission permission;
+  // Future<void> pickLocation() async {
+  //   try {
+  //     bool serviceEnabled;
+  //     LocationPermission permission;
 
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception(
-            'Location services are disabled. Please enable your location.');
-      }
+  //     serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //     if (!serviceEnabled) {
+  //       throw Exception(
+  //           'Location services are disabled. Please enable your location.');
+  //     }
 
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('Location permissions are denied');
-        }
-      }
+  //     permission = await Geolocator.checkPermission();
+  //     if (permission == LocationPermission.denied) {
+  //       permission = await Geolocator.requestPermission();
+  //       if (permission == LocationPermission.denied) {
+  //         throw Exception('Location permissions are denied');
+  //       }
+  //     }
 
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception(
-            'Location permissions are permanently denied. We cannot request permissions.');
-      }
+  //     if (permission == LocationPermission.deniedForever) {
+  //       throw Exception(
+  //           'Location permissions are permanently denied. We cannot request permissions.');
+  //     }
 
-      Position position = await Geolocator.getCurrentPosition();
-      setState(() {
-        location = position;
-      });
-      print('Picked Location: (${location!.latitude}, ${location!.longitude})');
-    } catch (e) {
-      print('Error fetching location: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Error fetching location: Enable your location services.',
-              style: TextStyle(color: Colors.red)),
-        ),
-      );
-    }
-  }
+  //     Position position = await Geolocator.getCurrentPosition();
+  //     setState(() {
+  //       location = position;
+  //     });
+  //     print('Picked Location: (${location!.latitude}, ${location!.longitude})');
+  //   } catch (e) {
+  //     print('Error fetching location: $e');
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //             'Error fetching location: Enable your location services.',
+  //             style: TextStyle(color: Colors.red)),
+  //       ),
+  //     );
+  //   }
+  // }
 
   Future<void> updateEvent() async {
     setState(() {

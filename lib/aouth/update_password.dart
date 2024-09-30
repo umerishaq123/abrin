@@ -75,7 +75,7 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
         Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => LoginPage(),
+                        builder: (context) => LoginPage(islogin: true,),
                       ),
                     );
       } else {

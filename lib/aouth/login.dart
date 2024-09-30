@@ -17,6 +17,9 @@ import 'package:shared_preferences/shared_preferences.dart';
  // Ensure the file where saveToken is defined is imported
 
 class LoginPage extends StatefulWidget {
+  final bool islogin;
+LoginPage({required this.islogin});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -127,9 +130,9 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: (){
+        leading:widget.islogin? IconButton(onPressed: (){
           Navigator.pop(context);
-        }, icon: Icon(Icons.arrow_back,color: Colors.blue,)),
+        }, icon: Icon(Icons.arrow_back,color: Colors.blue,)):SizedBox(),
       ),
       backgroundColor: Colors.white,
       body: Center(

@@ -9,21 +9,31 @@ class BottomNavBar extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<BottomNavBar> createState() => _BottomNavBarState();
+  State<BottomNavBar> createState() => BottomNavBarState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
-  int _page = 0;
+class BottomNavBarState extends State<BottomNavBar> {
+  int _currentIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    _page = widget.initialPage;
+    _currentIndex = widget.initialPage;
     _pageController = PageController(initialPage: widget.initialPage);
   }
 
+void setPage(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,24 +65,25 @@ class _BottomNavBarState extends State<BottomNavBar> {
         animationCurve: Curves.easeInOut,
         animationDuration: Duration(milliseconds: 400),
         height: 56.0,
-        index: _page,
-        onTap: (index) {
-          setState(() {
-            _page = index;
-          });
-          _pageController.animateToPage(
-            index,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        },
+        index: _currentIndex,
+        onTap:setPage,
+        //  (index) {
+        //   setState(() {
+        //     _currentIndex = index;
+        //   });
+        //   _pageController.animateToPage(
+        //     index,
+        //     duration: Duration(milliseconds: 300),
+        //     curve: Curves.easeInOut,
+        //   );
+        // },
         letIndexChange: (index) => true,
       ),
       body: PageView(
         controller: _pageController,
         onPageChanged: (index) {
           setState(() {
-            _page = index;
+            _currentIndex = index;
           });
           // Change the selected icon in the CurvedNavigationBar
           _bottomNavigationKey.currentState?.setPage(index);

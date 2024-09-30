@@ -341,8 +341,8 @@ import 'package:abrin_app_new/Search/localBusinnesCategores.dart';
 import 'package:abrin_app_new/Search/map_screen.dart';
 import 'package:abrin_app_new/Search/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:geolocator/geolocator.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class Searchbusiness extends StatefulWidget {
@@ -353,6 +353,7 @@ class Searchbusiness extends StatefulWidget {
 }
 
 class _SearchbusinessState extends State<Searchbusiness> {
+   final GlobalKey<FormState> searchKey = GlobalKey<FormState>();
   final TextEditingController _controller = TextEditingController();
   List<Business> _searchResults = [];
   List<Business> _locationResults = [];
@@ -501,6 +502,8 @@ class _SearchbusinessState extends State<Searchbusiness> {
                       height: 45,
                       width: MediaQuery.of(context).size.width - 75,
                       child: TextFormField(
+                        autofocus: true,
+                        key: searchKey,
                         controller: _controller,
                         onChanged: (value) {
                           _performSearch(value);

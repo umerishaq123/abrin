@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class BusinessService {
+  
  
   Future<List<Business>> fetchBusinesses() async {
     final response = await http

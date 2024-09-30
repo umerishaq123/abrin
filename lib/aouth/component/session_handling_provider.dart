@@ -7,6 +7,14 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionHandlingViewModel with ChangeNotifier {
+    String? _token;
+
+  String? get token => _token;
+
+  Future<void> fetchToken() async {
+    _token = await getToken(); // Assuming getToken is your async token fetching function
+    notifyListeners(); // Notify listeners to rebuild after fetching the token
+  }
   
   // Method to save token
   Future<bool> saveToken(var token) async {
