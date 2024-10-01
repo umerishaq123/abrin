@@ -508,7 +508,7 @@ class _SearchbusinessState extends State<Searchbusiness> {
                         height: 45,
                         width: MediaQuery.of(context).size.width - 75,
                         child: TextFormField(
-                          autofocus: false,
+                          autofocus: true,
                           key: searchKey,
                           controller: _controller,
                           onChanged: (value) {
