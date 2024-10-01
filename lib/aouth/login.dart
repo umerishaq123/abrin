@@ -53,6 +53,8 @@ class _LoginPageState extends State<LoginPage> {
       Utils.snackBar('Veuillez entrer un email', context);
     }else if(password.isEmpty){
       Utils.snackBar('Veuillez entrer un mot de passe', context);
+    }else{
+      Utils.dismissKeyboard(context);
     }
     
 
@@ -128,122 +130,128 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading:widget.islogin? IconButton(onPressed: (){
-          Navigator.pop(context);
-        }, icon: Icon(Icons.arrow_back,color: Colors.blue,)):SizedBox(),
-      ),
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: 70),
-                Text(
-                  'Welcome to',
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.blue,
-                  ),
-                ),
-                Text(
-                  'abirin',
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
-                ),
-                SizedBox(height: 48),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      hintText: 'example@gmail.com',
-                      labelText: "Email",
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(width: 2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      alignLabelWithHint: true,
+    return GestureDetector(
+      onTap: (){
+        Utils.dismissKeyboard(context);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading:widget.islogin? IconButton(onPressed: (){
+            Navigator.pop(context);
+          }, icon: Icon(Icons.arrow_back,color: Colors.blue,)):SizedBox(),
+        ),
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 70),
+                  Text(
+                    'Welcome to',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.blue,
                     ),
                   ),
-                ),
-                SizedBox(height: 16),
-                CustomTextField(
-                  controller: _passwordController,
-                  labelText: 'Password',
-                  obscureText: !_isPasswordVisible,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                  Text(
+                    'abirin',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
                     ),
-                    onPressed: _togglePasswordVisibility,
                   ),
-                ),
-                SizedBox(height: 40),
-                _isLoading
-                    ? CircularProgressIndicator()
-                    : CustomButton(
-                        text: 'Se connecter ',
-                        onPressed: _login,
-                      ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Vous n'avez pas de compte ?",
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 17,
+                  SizedBox(height: 48),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    child: TextFormField(
+                      autofocus: false,
+                      keyboardType: TextInputType.emailAddress,
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        hintText: 'example@gmail.com',
+                        labelText: "Email",
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        alignLabelWithHint: true,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SignupPage()),
-                        );
-                      },
-                      child: Text(
-                        "S'inscrire",
+                  ),
+                  SizedBox(height: 16),
+                  CustomTextField(
+                    controller: _passwordController,
+                    labelText: 'Password',
+                    obscureText: !_isPasswordVisible,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: _togglePasswordVisibility,
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                  _isLoading
+                      ? CircularProgressIndicator()
+                      : CustomButton(
+                          text: 'Se connecter ',
+                          onPressed: _login,
+                        ),
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Vous n'avez pas de compte ?",
                         style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 18,
+                          color: Colors.black54,
+                          fontSize: 17,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ResetPasswordScreen(),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SignupPage()),
+                          );
+                        },
+                        child: Text(
+                          "S'inscrire",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 18,
+                          ),
+                        ),
                       ),
-                    );
-                  },
-                  child: Text(
-                    "Forgot Password?",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 16,
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ResetPasswordScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      "Forgot Password?",
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

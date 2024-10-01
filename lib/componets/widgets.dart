@@ -23,6 +23,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      autofocus: false,
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,

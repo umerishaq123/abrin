@@ -340,6 +340,7 @@ import 'package:abrin_app_new/Search/localBusinesscategory.dart';
 import 'package:abrin_app_new/Search/localBusinnesCategores.dart';
 import 'package:abrin_app_new/Search/map_screen.dart';
 import 'package:abrin_app_new/Search/provider.dart';
+import 'package:abrin_app_new/utilis/utils.dart';
 import 'package:flutter/material.dart';
 // import 'package:geolocator/geolocator.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -474,151 +475,157 @@ class _SearchbusinessState extends State<Searchbusiness> {
   Widget build(BuildContext context) {
     final locationProvider = Provider.of<LocationProvider>(context);
 
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(15.0),
-                child: Text(
-                  "Trouvez tout ce dont vous avez besoin",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.blue),
+    return GestureDetector(
+      onTap: (){
+        Utils.dismissKeyboard(context);
+      },
+      child: SafeArea(
+        child: Scaffold(
+            resizeToAvoidBottomInset: false, 
+          body: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(15.0),
+                  child: Text(
+                    "Trouvez tout ce dont vous avez besoin",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blue),
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      height: 45,
-                      width: MediaQuery.of(context).size.width - 75,
-                      child: TextFormField(
-                        autofocus: true,
-                        key: searchKey,
-                        controller: _controller,
-                        onChanged: (value) {
-                          _performSearch(value);
-                        },
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide:
-                                const BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide:
-                                const BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: const BorderSide(color: Colors.blue),
-                          ),
-                          prefixIcon: Icon(
-                            Icons.search_rounded,
-                            color: Colors.blue,
-                          ),
-                          hintStyle: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Color.fromARGB(255, 121, 120, 120),
-                            fontSize: 13,
-                            fontFamily: "Montserrat",
-                          ),
-                          hintText: "Rechercher une entreprise ou des services",
-                          filled: true,
-                          fillColor: Colors.white,
-                          errorStyle: const TextStyle(
-                            height: 0.07,
-                            color: Colors.red,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 45,
+                        width: MediaQuery.of(context).size.width - 75,
+                        child: TextFormField(
+                          autofocus: false,
+                          key: searchKey,
+                          controller: _controller,
+                          onChanged: (value) {
+                            _performSearch(value);
+                          },
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide:
+                                  const BorderSide(color: Colors.blue, width: 2),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide:
+                                  const BorderSide(color: Colors.blue, width: 2),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: const BorderSide(color: Colors.blue),
+                            ),
+                            prefixIcon: Icon(
+                              Icons.search_rounded,
+                              color: Colors.blue,
+                            ),
+                            hintStyle: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 121, 120, 120),
+                              fontSize: 13,
+                              fontFamily: "Montserrat",
+                            ),
+                            hintText: "Rechercher une entreprise ou des services",
+                            filled: true,
+                            fillColor: Colors.white,
+                            errorStyle: const TextStyle(
+                              height: 0.07,
+                              color: Colors.red,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    // IconButton(
-                    //   onPressed: () {
-                    //     if (locationProvider.isLocationBasedSearch) {
-                    //       locationProvider.clearLocation();
-                    //       setState(() {
-                    //         _locationResults = [];
-                    //       });
-                    //     } else {
-                    //       locationProvider.enableLocationBasedSearch();
-                    //       _fetchCurrentLocation();
-                    //     }
-                    //     _navigateToMapScreen();
-                    //   },
-                    //   color: Colors.blue,
-                    //   icon: Icon(
-                    //     locationProvider.isLocationBasedSearch
-                    //         ? Icons.clear
-                    //         : Icons.location_on_sharp,
-                    //     color: Colors.blue,
-                    //   ),
-                    // ),
-                  ],
+                      // IconButton(
+                      //   onPressed: () {
+                      //     if (locationProvider.isLocationBasedSearch) {
+                      //       locationProvider.clearLocation();
+                      //       setState(() {
+                      //         _locationResults = [];
+                      //       });
+                      //     } else {
+                      //       locationProvider.enableLocationBasedSearch();
+                      //       _fetchCurrentLocation();
+                      //     }
+                      //     _navigateToMapScreen();
+                      //   },
+                      //   color: Colors.blue,
+                      //   icon: Icon(
+                      //     locationProvider.isLocationBasedSearch
+                      //         ? Icons.clear
+                      //         : Icons.location_on_sharp,
+                      //     color: Colors.blue,
+                      //   ),
+                      // ),
+                    ],
+                  ),
                 ),
-              ),
-              _isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : Expanded(
-                      child: ListView.builder(
-                        itemCount: _controller.text.isEmpty
-                            ? (locationProvider.isLocationBasedSearch
-                                ? _locationResults.length
-                                : _allitems.length)
-                            : _searchResults.length,
-                        itemBuilder: (context, index) {
-                          Business item = _controller.text.isEmpty
+                _isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount: _controller.text.isEmpty
                               ? (locationProvider.isLocationBasedSearch
-                                  ? _locationResults[index]
-                                  : _allitems[index])
-                              : _searchResults[index];
-                          return Localbusinnescategores(
-                            businescategory: item,
-                            // latLng: LatLng(28.3901, 70.3300),
-                          );
-                        },
+                                  ? _locationResults.length
+                                  : _allitems.length)
+                              : _searchResults.length,
+                          itemBuilder: (context, index) {
+                            Business item = _controller.text.isEmpty
+                                ? (locationProvider.isLocationBasedSearch
+                                    ? _locationResults[index]
+                                    : _allitems[index])
+                                : _searchResults[index];
+                            return Localbusinnescategores(
+                              businescategory: item,
+                              // latLng: LatLng(28.3901, 70.3300),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-            ],
+              ],
+            ),
           ),
+        //   floatingActionButton: Align(
+        //     alignment: Alignment.bottomCenter,
+        //     child: Container(
+        //       height: 35,
+        //       width: 160,
+        //       child: FloatingActionButton(
+        //         onPressed: () {
+        //           locationProvider.enableLocationBasedSearch();
+        //           _fetchCurrentLocation();
+        //           _navigateToMapScreen();
+        //         },
+        //         backgroundColor: Colors.blue,
+        //         shape: RoundedRectangleBorder(
+        //           borderRadius: BorderRadius.circular(30),
+        //         ),
+        //         child: Text(
+        //           "Voir sur la carte",
+        //           style: TextStyle(
+        //             fontSize: 16,
+        //             color: Colors.white,
+        //             fontWeight: FontWeight.w600,
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        //   floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         ),
-      //   floatingActionButton: Align(
-      //     alignment: Alignment.bottomCenter,
-      //     child: Container(
-      //       height: 35,
-      //       width: 160,
-      //       child: FloatingActionButton(
-      //         onPressed: () {
-      //           locationProvider.enableLocationBasedSearch();
-      //           _fetchCurrentLocation();
-      //           _navigateToMapScreen();
-      //         },
-      //         backgroundColor: Colors.blue,
-      //         shape: RoundedRectangleBorder(
-      //           borderRadius: BorderRadius.circular(30),
-      //         ),
-      //         child: Text(
-      //           "Voir sur la carte",
-      //           style: TextStyle(
-      //             fontSize: 16,
-      //             color: Colors.white,
-      //             fontWeight: FontWeight.w600,
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      //   floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
