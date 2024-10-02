@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: 150,
+                  height:MediaQuery.of(context).size.height*0.19,
                   color: Colors.blue,
                   width: MediaQuery.of(context).size.width,
                   child: Stack(
@@ -423,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Text(
                                           // child: Text(viewModel.getToken() != null ? 'Add Business' : 'Sign Up'),
       
-                                          " Comencer ",
+                                          " Commencer ",
       
                                           style: TextStyle(
                                               fontSize: 16,

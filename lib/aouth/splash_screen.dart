@@ -19,7 +19,7 @@ class _SplasScreenState extends State<SplasScreen> {
   void initState() {
     super.initState();
     // Delay navigation by 3 seconds
-    Future.delayed(Duration(seconds: 3), () async {
+    Future.delayed(Duration(seconds: 1), () async {
       // Navigate to your desired screen
       // final token = await SessionHandlingViewModel().getToken();
       // print("::: the token in splash is :$token");
