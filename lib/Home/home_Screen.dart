@@ -323,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 6,
                       ),
                       const Text(
-                        "Découvrez nos recommandations d'entreprises à découvrir",
+                        "Découvrez nos recommandations d'entreprises ",
                         style: TextStyle(
                             fontSize: 16, color: Colors.black, height: 1.2),
                         maxLines: 3,
@@ -369,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   height: 6,
                                 ),
                                 const Text(
-                                  "Ajoutez une entreprise dans Abirin",
+                                  "Ajoutez une entreprise dans abirin",
                                   style: TextStyle(
                                       fontSize: 16,
                                       color: Color.fromARGB(159, 246, 243, 243),
